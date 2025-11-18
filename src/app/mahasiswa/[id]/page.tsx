@@ -4,21 +4,34 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FiArrowLeft, FiUser, FiBookOpen, FiAward, FiCalendar, FiTag, FiImage } from 'react-icons/fi';
 import Image from "next/image";
+import { getProjectById } from "@/lib/api";
+
+type Mahasiswa = {
+    nim: string;
+    nama: string;
+    email?: string;
+    kelas?: string;
+    prodi?: string;
+};
 
 type Project = {
-    project_id: number;
-    judul_proyek: string;
-    deskripsi_singkat: string;
-    nama_mahasiswa: string;
-    nim_mahasiswa: string;
-    program_studi: string;
-    dosen_pembimbing: string;
+    id: number;
+    nim: string;
+    mahasiswa?: Mahasiswa; // Eager loaded relationship
+    judul_project: string;
+    deskripsi: string;
+    tahun: number;
     tahun_selesai: number;
-    path_foto_utama: string;
-    path_foto_galeri: string;
-    foto_utama_url?: string;
+    kategori: string;
+    teknologi: string;
+    dosen_pembimbing: string | null;
+    cover_image: string | null;
+    galeri: string | null;
+    link_demo: string | null;
+    link_github: string | null;
+    status: string;
+    foto_utama_url?: string | null;
     galeri_urls?: string[];
-    keywords: string;
 };
 
 export default function ProjectDetailPage() {
@@ -34,12 +47,12 @@ export default function ProjectDetailPage() {
         const fetchProject = async () => {
             try {
                 setLoading(true);
-                // Use current host instead of hardcoded localhost for network access
-                const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-                const res = await fetch(`http://${currentHost}:8000/api/project/${projectId}`);
-                if (!res.ok) throw new Error("Failed to fetch project");
-                const data = await res.json();
-                setProject(data);
+                const response = await getProjectById(Number(projectId));
+                if (response.success) {
+                    setProject(response.data);
+                } else {
+                    throw new Error("Failed to fetch project");
+                }
             } catch (err: unknown) {
                 setError((err as Error).message);
             } finally {
@@ -80,22 +93,22 @@ export default function ProjectDetailPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-800 text-white py-8">
+            <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white py-8">
                 <div className="max-w-7xl mx-auto px-4">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center text-blue-200 hover:text-white mb-6 transition-colors"
+                        className="flex items-center text-blue-100 hover:text-white mb-6 transition-colors"
                     >
                         <FiArrowLeft className="w-5 h-5 mr-2" />
                         Back to Projects
                     </button>
 
-                    <div className="text-center">
-                        <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                                        <div className="text-center">
+                        <h1 className="text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
                             Project Details
                         </h1>
                         <p className="text-xl text-blue-100">
-                            {project.judul_proyek}
+                            {project.judul_project}
                         </p>
                     </div>
                 </div>
@@ -111,7 +124,7 @@ export default function ProjectDetailPage() {
                                 <div className="relative h-96">
                                     <Image
                                         src={project.foto_utama_url}
-                                        alt={project.judul_proyek}
+                                        alt={project.judul_project}
                                         fill
                                         className="object-cover"
                                     />
@@ -124,7 +137,7 @@ export default function ProjectDetailPage() {
                             <h2 className="text-3xl font-bold text-gray-800 mb-6">Project Description</h2>
                             <div className="prose prose-lg max-w-none">
                                 <p className="text-gray-700 leading-relaxed text-lg">
-                                    {project.deskripsi_singkat}
+                                    {project.deskripsi}
                                 </p>
                             </div>
                         </div>
@@ -174,8 +187,13 @@ export default function ProjectDetailPage() {
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-medium text-gray-500">Student</p>
-                                        <p className="text-gray-900 font-semibold text-lg">{project.nama_mahasiswa}</p>
-                                        <p className="text-gray-500 text-sm">NIM: {project.nim_mahasiswa}</p>
+                                        <p className="text-gray-900 font-semibold text-lg">
+                                            {project.mahasiswa?.nama || 'Nama tidak tersedia'}
+                                        </p>
+                                        <p className="text-gray-500 text-sm">NIM: {project.nim}</p>
+                                        {project.mahasiswa?.kelas && (
+                                            <p className="text-gray-500 text-sm">Kelas: {project.mahasiswa.kelas}</p>
+                                        )}
                                     </div>
                                 </div>
 
@@ -185,7 +203,9 @@ export default function ProjectDetailPage() {
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-medium text-gray-500">Program Studi</p>
-                                        <p className="text-gray-900 font-semibold">{project.program_studi}</p>
+                                        <p className="text-gray-900 font-semibold">
+                                            {project.mahasiswa?.prodi || 'Teknik Perangkat Lunak'}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -213,20 +233,20 @@ export default function ProjectDetailPage() {
                             </div>
                         </div>
 
-                        {/* Keywords */}
-                        {project.keywords && (
+                        {/* Technologies */}
+                        {project.teknologi && (
                             <div className="bg-white rounded-2xl shadow-lg p-6">
                                 <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
                                     <FiTag className="w-6 h-6 mr-2 text-blue-600" />
-                                    Keywords
+                                    Technologies Used
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {project.keywords.split(',').map((keyword, index) => (
+                                    {project.teknologi.split(',').map((tech: string, index: number) => (
                                         <span
                                             key={index}
                                             className="bg-blue-50 text-blue-700 px-3 py-2 rounded-full text-sm font-medium"
                                         >
-                                            {keyword.trim()}
+                                            {tech.trim()}
                                         </span>
                                     ))}
                                 </div>
@@ -245,9 +265,9 @@ export default function ProjectDetailPage() {
                                 </div>
                                 <div className="bg-white rounded-lg p-4">
                                     <div className="text-2xl font-bold text-purple-600">
-                                        {project.keywords ? project.keywords.split(',').length : 0}
+                                        {project.teknologi ? project.teknologi.split(',').length : 0}
                                     </div>
-                                    <div className="text-sm text-gray-600">Keywords</div>
+                                    <div className="text-sm text-gray-600">Technologies</div>
                                 </div>
                             </div>
                         </div>

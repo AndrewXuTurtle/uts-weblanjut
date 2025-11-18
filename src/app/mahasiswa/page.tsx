@@ -4,21 +4,34 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiSearch, FiCalendar, FiUser, FiBookOpen, FiAward, FiFolder, FiEye } from 'react-icons/fi';
 import Image from "next/image";
+import { getProject } from "@/lib/api";
+
+type Mahasiswa = {
+    nim: string;
+    nama: string;
+    email?: string;
+    kelas?: string;
+    prodi?: string;
+};
 
 type Project = {
-    project_id: number;
-    judul_proyek: string;
-    deskripsi_singkat: string;
-    nama_mahasiswa: string;
-    nim_mahasiswa: string;
-    program_studi: string;
-    dosen_pembimbing: string;
+    id: number;
+    nim: string;
+    mahasiswa?: Mahasiswa; // Eager loaded relationship
+    judul_project: string;
+    deskripsi: string;
+    tahun: number;
     tahun_selesai: number;
-    path_foto_utama: string;
-    path_foto_galeri: string;
-    foto_utama_url?: string;
+    kategori: string;
+    teknologi: string;
+    dosen_pembimbing: string | null;
+    cover_image: string | null;
+    galeri: string | null;
+    link_demo: string | null;
+    link_github: string | null;
+    status: string;
+    foto_utama_url?: string | null;
     galeri_urls?: string[];
-    keywords: string;
 };
 
 export default function ProjectsPage() {
@@ -32,12 +45,14 @@ export default function ProjectsPage() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            // Use current host instead of hardcoded localhost for network access
-            const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-            const res = await fetch(`http://${currentHost}:8000/api/project`);
-            if (!res.ok) throw new Error("Failed to fetch");
-            const json = await res.json();
-            setData(Array.isArray(json) ? json : []);
+            const response = await getProject();
+            if (response.success) {
+                // Handle both array and paginated responses
+                const projects = Array.isArray(response.data) ? response.data : response.data.data || [];
+                setData(projects);
+            } else {
+                throw new Error("Failed to fetch projects");
+            }
         } catch (err: unknown) {
             setError((err as Error).message);
         } finally {
@@ -49,21 +64,22 @@ export default function ProjectsPage() {
         fetchData();
     }, []);
 
-    const tahunList = ["all", ...new Set(data.map((p) => p.tahun_selesai?.toString()))].sort((a, b) => (a === "all" ? -1 : b === "all" ? 1 : Number(b) - Number(a)));
+    const tahunList = ["all", ...new Set(data.map((p) => p.tahun_selesai?.toString()).filter(Boolean))].sort((a, b) => (a === "all" ? -1 : b === "all" ? 1 : Number(b) - Number(a)));
 
     const filteredData = data.filter((project) => {
         const matchesSearch =
-            project.judul_proyek.toLowerCase().includes(search.toLowerCase()) ||
-            project.nama_mahasiswa.toLowerCase().includes(search.toLowerCase()) ||
-            project.nim_mahasiswa.includes(search) ||
-            (project.keywords && project.keywords.toLowerCase().includes(search.toLowerCase()));
+            (project.judul_project && project.judul_project.toLowerCase().includes(search.toLowerCase())) ||
+            (project.nim && project.nim.includes(search)) ||
+            (project.mahasiswa?.nama && project.mahasiswa.nama.toLowerCase().includes(search.toLowerCase())) ||
+            (project.deskripsi && project.deskripsi.toLowerCase().includes(search.toLowerCase())) ||
+            (project.teknologi && project.teknologi.toLowerCase().includes(search.toLowerCase()));
         const matchesTahun = selectedTahun === "all" || project.tahun_selesai?.toString() === selectedTahun;
         return matchesSearch && matchesTahun;
     });
 
     // Calculate statistics
     const totalProjects = data.length;
-    const uniqueStudents = new Set(data.map(p => p.nim_mahasiswa)).size;
+    const uniqueStudents = new Set(data.map(p => p.nim)).size;
     const currentYear = new Date().getFullYear();
     const recentProjects = data.filter(p => p.tahun_selesai === currentYear).length;
 
@@ -84,10 +100,10 @@ export default function ProjectsPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
             {/* Hero Section */}
-            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-800 text-white py-16">
+            <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white py-16">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="text-center">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                        <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
                             Galeri Proyek Mahasiswa
                         </h1>
                         <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
@@ -173,7 +189,7 @@ export default function ProjectsPage() {
                         <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                             {filteredData.map((project) => (
                                 <div
-                                    key={project.project_id}
+                                    key={project.id}
                                     className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100"
                                 >
                                     {/* Project Image */}
@@ -181,12 +197,12 @@ export default function ProjectsPage() {
                                         {project.foto_utama_url ? (
                                             <Image
                                                 src={project.foto_utama_url}
-                                                alt={project.judul_proyek}
+                                                alt={project.judul_project}
                                                 fill
                                                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                                             />
                                         ) : (
-                                            <div className="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                                            <div className="w-full h-full bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
                                                 <FiFolder className="w-16 h-16 text-gray-400" />
                                             </div>
                                         )}
@@ -196,7 +212,7 @@ export default function ProjectsPage() {
                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
                                             <div
                                                 className="bg-white rounded-full p-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                                                onClick={() => router.push(`/mahasiswa/${project.project_id}`)}
+                                                onClick={() => router.push(`/mahasiswa/${project.id}`)}
                                                 title="View Project Details"
                                             >
                                                 <FiEye className="w-6 h-6 text-gray-800" />
@@ -208,10 +224,10 @@ export default function ProjectsPage() {
                                     <div className="p-6">
                                         <div className="mb-4">
                                             <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2">
-                                                {project.judul_proyek}
+                                                {project.judul_project}
                                             </h3>
                                             <p className="text-gray-600 text-sm line-clamp-3">
-                                                {project.deskripsi_singkat}
+                                                {project.deskripsi}
                                             </p>
                                         </div>
 
@@ -222,25 +238,27 @@ export default function ProjectsPage() {
                                                 </div>
                                                 <div className="flex-1">
                                                     <p className="text-sm font-medium text-gray-500">Mahasiswa</p>
-                                                    <p className="text-gray-900 font-semibold">{project.nama_mahasiswa}</p>
-                                                    <p className="text-gray-500 text-sm">NIM: {project.nim_mahasiswa}</p>
+                                                    <p className="text-gray-900 font-semibold">
+                                                        {project.mahasiswa?.nama || 'Nama tidak tersedia'}
+                                                    </p>
+                                                    <p className="text-gray-500 text-sm">NIM: {project.nim}</p>
                                                 </div>
                                             </div>
 
                                             <div className="flex items-start space-x-3">
-                                                <div className="bg-green-100 rounded-lg p-2">
-                                                    <FiBookOpen className="w-4 h-4 text-green-600" />
+                                                <div className="bg-cyan-100 rounded-lg p-2">
+                                                    <FiBookOpen className="w-4 h-4 text-cyan-600" />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-medium text-gray-500">Program Studi</p>
-                                                    <p className="text-gray-900 font-semibold">{project.program_studi}</p>
+                                                    <p className="text-sm font-medium text-gray-500">Kategori</p>
+                                                    <p className="text-gray-900 font-semibold">{project.kategori}</p>
                                                 </div>
                                             </div>
 
                                             {project.dosen_pembimbing && (
                                                 <div className="flex items-start space-x-3">
-                                                    <div className="bg-purple-100 rounded-lg p-2">
-                                                        <FiAward className="w-4 h-4 text-purple-600" />
+                                                    <div className="bg-blue-100 rounded-lg p-2">
+                                                        <FiAward className="w-4 h-4 text-blue-600" />
                                                     </div>
                                                     <div className="flex-1">
                                                         <p className="text-sm font-medium text-gray-500">Dosen Pembimbing</p>
@@ -250,16 +268,16 @@ export default function ProjectsPage() {
                                             )}
                                         </div>
 
-                                        {/* Keywords */}
-                                        {project.keywords && (
+                                        {/* Technologies */}
+                                        {project.teknologi && (
                                             <div className="mt-4 pt-4 border-t border-gray-100">
                                                 <div className="flex flex-wrap gap-2">
-                                                    {project.keywords.split(',').slice(0, 3).map((keyword, index) => (
+                                                    {project.teknologi.split(',').slice(0, 3).map((tech: string, index: number) => (
                                                         <span
                                                             key={index}
                                                             className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium"
                                                         >
-                                                            {keyword.trim()}
+                                                            {tech.trim()}
                                                         </span>
                                                     ))}
                                                 </div>

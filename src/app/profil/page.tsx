@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaCode, FaLaptop, FaProjectDiagram, FaSpinner } from "react-icons/fa";
+import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaCode, FaLaptop, FaProjectDiagram, FaSpinner, FaAward, FaGraduationCap, FaBriefcase, FaRocket } from "react-icons/fa";
+import Image from "next/image";
 
 interface ProfilData {
     id: number;
@@ -11,6 +12,7 @@ interface ProfilData {
     deskripsi: string;
     akreditasi: string;
     logo: string | null;
+    logo_url?: string;
     kontak_email: string;
     kontak_telepon: string;
     alamat: string;
@@ -82,72 +84,122 @@ export default function Profil() {
     }
 
     return (
-        <div className="pt-20 px-4 md:px-8 max-w-7xl mx-auto">
-            {/* Header Section */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-8 mb-10 text-white shadow-lg">
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">Profil Program Studi {profilData.nama_prodi}</h1>
-                <p className="text-lg md:text-xl mb-6 max-w-3xl">
-                    {profilData.deskripsi}
-                </p>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+            {/* Hero Section with Logo */}
+            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white py-20">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                        {/* Logo Section */}
+                        <div className="flex-shrink-0">
+                            {profilData.logo_url ? (
+                                <div className="relative w-48 h-48 md:w-64 md:h-64 bg-white rounded-full p-4 shadow-2xl">
+                                    <Image
+                                        src={profilData.logo_url}
+                                        alt={`Logo ${profilData.nama_prodi}`}
+                                        fill
+                                        className="object-contain p-4"
+                                        priority
+                                    />
+                                </div>
+                            ) : (
+                                <div className="w-48 h-48 md:w-64 md:h-64 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl">
+                                    <FaGraduationCap className="w-24 h-24 md:w-32 md:h-32 text-white" />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Title & Description */}
+                        <div className="flex-1 text-center md:text-left">
+                            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
+                                <FaAward className="text-yellow-300" />
+                                <span className="text-sm font-semibold">Akreditasi {profilData.akreditasi}</span>
+                            </div>
+                            <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                                {profilData.nama_prodi}
+                            </h1>
+                            <p className="text-lg md:text-xl text-blue-100 mb-6 max-w-3xl">
+                                {profilData.deskripsi}
+                            </p>
+                            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                                    <FaPhone className="text-blue-200" />
+                                    <span className="text-sm">{profilData.kontak_telepon}</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                                    <FaEnvelope className="text-blue-200" />
+                                    <span className="text-sm">{profilData.kontak_email}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* About Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                <div>
-                    <h2 className="text-2xl font-bold mb-4 text-gray-800 border-b pb-2">Tentang Program Studi</h2>
-                    <p className="text-gray-700 mb-4">
-                        {profilData.deskripsi}
-                    </p>
-                    <div className="flex flex-col space-y-3 mt-6">
-                        <div className="flex items-center">
-                            <FaMapMarkerAlt className="text-blue-600 mr-3" />
-                            <span className="text-gray-700">{profilData.alamat.replace('\\n', ', ')}</span>
-                        </div>
-                        <div className="flex items-center">
-                            <FaCode className="text-blue-600 mr-3" />
-                            <span className="text-gray-700">Akreditasi: {profilData.akreditasi}</span>
-                        </div>
-                        <div className="flex items-center">
-                            <FaPhone className="text-blue-600 mr-3" />
-                            <span className="text-gray-700">{profilData.kontak_telepon}</span>
-                        </div>
-                        <div className="flex items-center">
-                            <FaEnvelope className="text-blue-600 mr-3" />
-                            <span className="text-gray-700">{profilData.kontak_email}</span>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-gray-100 rounded-lg p-6 flex items-center justify-center">
-                    <div className="text-center">
-                        <div className="w-48 h-48 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                            <FaCode className="h-24 w-24 text-blue-600" />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-800">{profilData.nama_prodi}</h3>
-                        <p className="text-gray-600 mt-2">Membangun Masa Depan Digital</p>
-                    </div>
-                </div>
-            </div>
+            {/* Main Content */}
+            <div className="max-w-7xl mx-auto px-4 py-12">
 
-            {/* Vision & Mission */}
-            <div className="mb-12">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Visi & Misi</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800">Visi</h3>
-                        <p className="text-gray-700">
-                            {profilData.visi}
-                        </p>
+                {/* Quick Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                    <div className="bg-white rounded-xl p-6 shadow-lg border-t-4 border-blue-500 text-center">
+                        <FaGraduationCap className="w-12 h-12 mx-auto mb-3 text-blue-600" />
+                        <h3 className="text-3xl font-bold text-gray-800 mb-1">100+</h3>
+                        <p className="text-gray-600">Mahasiswa Aktif</p>
                     </div>
-                    <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800">Misi</h3>
-                        <ul className="list-disc list-inside text-gray-700 space-y-2">
-                            {profilData.misi.split('\\n').map((misi, index) => (
-                                <li key={index}>{misi.replace(/^\d+\.\s*/, '')}</li>
-                            ))}
-                        </ul>
+                    <div className="bg-white rounded-xl p-6 shadow-lg border-t-4 border-green-500 text-center">
+                        <FaBriefcase className="w-12 h-12 mx-auto mb-3 text-green-600" />
+                        <h3 className="text-3xl font-bold text-gray-800 mb-1">95%</h3>
+                        <p className="text-gray-600">Lulusan Bekerja</p>
+                    </div>
+                    <div className="bg-white rounded-xl p-6 shadow-lg border-t-4 border-purple-500 text-center">
+                        <FaAward className="w-12 h-12 mx-auto mb-3 text-purple-600" />
+                        <h3 className="text-3xl font-bold text-gray-800 mb-1">{profilData.akreditasi}</h3>
+                        <p className="text-gray-600">Akreditasi</p>
+                    </div>
+                    <div className="bg-white rounded-xl p-6 shadow-lg border-t-4 border-orange-500 text-center">
+                        <FaRocket className="w-12 h-12 mx-auto mb-3 text-orange-600" />
+                        <h3 className="text-3xl font-bold text-gray-800 mb-1">20+</h3>
+                        <p className="text-gray-600">Project Aktif</p>
                     </div>
                 </div>
-            </div>
+
+                {/* Vision & Mission */}
+                <div className="mb-12">
+                    <div className="text-center mb-10">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Visi & Misi</h2>
+                        <p className="text-gray-600">Komitmen kami untuk membentuk generasi profesional IT masa depan</p>
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-xl border border-blue-200">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="bg-blue-500 p-3 rounded-lg">
+                                    <FaRocket className="w-6 h-6 text-white" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-800">Visi</h3>
+                            </div>
+                            <p className="text-gray-700 leading-relaxed text-lg">
+                                {profilData.visi}
+                            </p>
+                        </div>
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-2xl shadow-xl border border-green-200">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="bg-green-500 p-3 rounded-lg">
+                                    <FaAward className="w-6 h-6 text-white" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-800">Misi</h3>
+                            </div>
+                            <ul className="space-y-3">
+                                {profilData.misi.split('\\n').map((misi, index) => (
+                                    <li key={index} className="flex items-start gap-3 text-gray-700">
+                                        <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                            {index + 1}
+                                        </span>
+                                        <span className="leading-relaxed">{misi.replace(/^\d+\.\s*/, '')}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
             {/* Mata Kuliah Utama */}
             <div className="mb-12">
@@ -265,6 +317,7 @@ export default function Profil() {
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     );

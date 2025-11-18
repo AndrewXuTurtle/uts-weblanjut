@@ -3,11 +3,13 @@
 import { FiMail, FiPhone, FiMapPin, FiGithub, FiLinkedin, FiInstagram } from "react-icons/fi";
 
 const quickLinks = [
-	// { label: "Beranda", href: "/beranda" },
-	// { label: "Profil", href: "/profil" },
-	// { label: "Dosen", href: "/dosen" },
-	// { label: "Mahasiswa", href: "/mahasiswa" },
-	// { label: "Mata Kuliah", href: "/pengumuman" },
+	{ label: "Beranda", href: "/beranda" },
+	{ label: "Profil", href: "/profil" },
+	{ label: "Dosen", href: "/dosen" },
+	{ label: "Mahasiswa", href: "/mahasiswa" },
+	{ label: "Mata Kuliah", href: "/matakuliah" },
+	{ label: "Penelitian", href: "/penelitian" },
+	{ label: "PKM", href: "/pkm" },
 	{ label: "Live Chat", href: "#", isChat: true },
 ];
 
@@ -21,14 +23,14 @@ export default function Footer() {
 	};
 
 	return (
-		<footer className="bg-gray-900 text-white pt-12 pb-8 px-4">
+		<footer className="bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white pt-12 pb-8 px-4">
 			<div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
 				{/* About Section */}
 				<div className="space-y-4">
-					<h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+					<h3 className="text-2xl font-bold">
 						Teknik Perangkat Lunak
 					</h3>
-					<p className="text-gray-300 text-sm leading-relaxed">
+					<p className="text-blue-50 text-sm leading-relaxed">
 						Program Studi yang berfokus pada pengembangan perangkat lunak berkualitas tinggi
 						dengan standar industri modern.
 					</p>
@@ -43,7 +45,7 @@ export default function Footer() {
 								<a
 									href={link.isChat ? "#" : link.href}
 									onClick={(e) => handleLinkClick(link, e)}
-									className="text-gray-300 hover:text-white transition-colors duration-200 text-sm block cursor-pointer"
+									className="text-blue-50 hover:text-white transition-colors duration-200 text-sm block cursor-pointer"
 								>
 									{link.label}
 								</a>
@@ -56,16 +58,16 @@ export default function Footer() {
 				<div className="space-y-4">
 					<h4 className="text-lg font-semibold">Hubungi Kami</h4>
 					<div className="space-y-3">
-						<div className="flex items-center space-x-3 text-gray-300">
-							<FiMapPin className="w-5 h-5 text-blue-400" />
+						<div className="flex items-center space-x-3 text-blue-50">
+							<FiMapPin className="w-5 h-5 text-white" />
 							<span className="text-sm">Jl. Universitas No. 123, Kota, Indonesia</span>
 						</div>
-						<div className="flex items-center space-x-3 text-gray-300">
-							<FiPhone className="w-5 h-5 text-blue-400" />
+						<div className="flex items-center space-x-3 text-blue-50">
+							<FiPhone className="w-5 h-5 text-white" />
 							<span className="text-sm">+62 123 4567 890</span>
 						</div>
-						<div className="flex items-center space-x-3 text-gray-300">
-							<FiMail className="w-5 h-5 text-blue-400" />
+						<div className="flex items-center space-x-3 text-blue-50">
+							<FiMail className="w-5 h-5 text-white" />
 							<span className="text-sm">info@universitaskita.ac.id</span>
 						</div>
 					</div>
@@ -80,7 +82,7 @@ export default function Footer() {
 							<a
 								key={index}
 								href={social.href}
-								className="text-gray-400 hover:text-white transition-colors duration-200"
+								className="text-blue-50 hover:text-white transition-colors duration-200"
 								target="_blank"
 								rel="noopener noreferrer"
 							>
@@ -92,8 +94,8 @@ export default function Footer() {
 			</div>
 
 			{/* Copyright */}
-			<div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800">
-				<p className="text-center text-gray-400 text-sm">
+			<div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-white/20">
+				<p className="text-center text-blue-50 text-sm">
 					© {new Date().getFullYear()} Teknik Perangkat Lunak. All rights reserved.
 				</p>
 			</div>

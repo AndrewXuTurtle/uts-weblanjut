@@ -1,21 +1,24 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { FiMail, FiBookOpen, FiBriefcase, FiUsers, FiAward } from 'react-icons/fi';
+import { FiMail, FiBookOpen, FiBriefcase, FiUsers, FiAward, FiExternalLink } from 'react-icons/fi';
 import Image from "next/image";
+import { getDosen } from '@/lib/api';
 
 type Dosen = {
     id: number;
     nidn: string;
     nama: string;
     email: string;
-    program_studi: string;
+    no_hp?: string;
     jabatan: string;
+    pendidikan_terakhir?: string;
     bidang_keahlian?: string;
-    foto?: string;
+    google_scholar_link?: string;
+    sinta_link?: string;
+    scopus_link?: string;
     foto_url?: string;
-    created_at?: string;
-    updated_at?: string;
+    status?: string;
 };
 
 
@@ -27,12 +30,14 @@ export default function Profil() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            // Use current host instead of hardcoded localhost for network access
-            const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-            const res = await fetch(`http://${currentHost}:8000/api/dosen`);
-            if (!res.ok) throw new Error("Failed to fetch");
-            const json = await res.json();
-            setData(Array.isArray(json) ? json : []);
+            const response = await getDosen({ status: 'Aktif' });
+            if (response.success) {
+                // Handle direct array response (Format A - auto-normalized)
+                const dosenData = Array.isArray(response.data) ? response.data : [];
+                setData(dosenData);
+            } else {
+                throw new Error("Failed to fetch dosen");
+            }
         } catch (err: unknown) {
             setError((err as Error).message);
         } finally {
@@ -171,8 +176,8 @@ export default function Profil() {
                                                     <FiBookOpen className="w-5 h-5 text-green-600" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-medium text-gray-500">Program Studi</p>
-                                                    <p className="text-gray-900 font-semibold">{dosen.program_studi}</p>
+                                                    <p className="text-sm font-medium text-gray-500">Pendidikan</p>
+                                                    <p className="text-gray-900 font-semibold">{dosen.pendidikan_terakhir || 'S2'}</p>
                                                 </div>
                                             </div>
 
@@ -185,6 +190,38 @@ export default function Profil() {
                                                     <p className="text-gray-900 font-semibold break-all">{dosen.email}</p>
                                                 </div>
                                             </div>
+
+                                            {/* Academic Links */}
+                                            {(dosen.google_scholar_link || dosen.sinta_link || dosen.scopus_link) && (
+                                                <div className="flex items-start space-x-3">
+                                                    <div className="bg-blue-100 rounded-lg p-2">
+                                                        <FiExternalLink className="w-5 h-5 text-blue-600" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="text-sm font-medium text-gray-500 mb-2">Profil Akademik</p>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {dosen.google_scholar_link && (
+                                                                <a href={dosen.google_scholar_link} target="_blank" rel="noopener noreferrer" 
+                                                                   className="inline-flex items-center gap-1 text-xs bg-red-50 text-red-700 px-2 py-1 rounded hover:bg-red-100">
+                                                                    Google Scholar
+                                                                </a>
+                                                            )}
+                                                            {dosen.sinta_link && (
+                                                                <a href={dosen.sinta_link} target="_blank" rel="noopener noreferrer"
+                                                                   className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded hover:bg-blue-100">
+                                                                    SINTA
+                                                                </a>
+                                                            )}
+                                                            {dosen.scopus_link && (
+                                                                <a href={dosen.scopus_link} target="_blank" rel="noopener noreferrer"
+                                                                   className="inline-flex items-center gap-1 text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded hover:bg-orange-100">
+                                                                    Scopus
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Footer */}
@@ -192,7 +229,7 @@ export default function Profil() {
                                             <div className="flex items-center justify-between text-sm text-gray-500">
                                                 <span>Dosen Tetap</span>
                                                 <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
-                                                    Aktif
+                                                    {dosen.status || 'Aktif'}
                                                 </span>
                                             </div>
                                         </div>
