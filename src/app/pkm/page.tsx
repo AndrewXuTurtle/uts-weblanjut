@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FiSearch, FiCalendar, FiAward, FiCheckCircle, FiClock, FiTrendingUp, FiBookOpen, FiUser, FiUsers } from 'react-icons/fi';
 import { getPKM } from '@/lib/api';
 
@@ -33,6 +34,7 @@ interface PKM {
 }
 
 export default function PKMPage() {
+  const router = useRouter();
   const [data, setData] = useState<PKM[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -210,7 +212,8 @@ export default function PKMPage() {
               {filteredData.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100"
+                  onClick={() => router.push(`/pkm/${item.id}`)}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 cursor-pointer hover:-translate-y-2"
                 >
                   {/* Header with status */}
                   <div className="bg-gradient-to-r from-blue-500 to-indigo-500 p-4">

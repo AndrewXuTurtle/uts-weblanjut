@@ -75,148 +75,178 @@ export default function Beranda() {
     }, []);
 
     return (
-        <div className="pt-20 px-4 md:px-8 max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
             {/* Hero Section */}
-            <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 rounded-xl p-8 mb-10 text-white shadow-lg">
-                <div className="text-center">
-                    <h1 className="text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
-                        Program Studi Teknik Perangkat Lunak
-                    </h1>
-                    <p className="text-lg md:text-xl mb-6 max-w-3xl mx-auto">
-                        Mencetak tenaga profesional di bidang pengembangan perangkat lunak dengan standar industri modern dan inovasi teknologi terkini.
-                    </p>
-                    <div className="flex flex-wrap gap-4 justify-center">
-                        <Link href="/profil" className="bg-white text-blue-600 hover:bg-blue-50 px-6 py-3 rounded-lg font-semibold transition duration-300 shadow-md">
-                            <FaRocket className="inline mr-2" />
-                            Tentang Program
-                        </Link>
-                        <Link href="/mahasiswa" className="bg-transparent border-2 border-white hover:bg-white hover:text-blue-600 px-6 py-3 rounded-lg font-semibold transition duration-300">
-                            <FaProjectDiagram className="inline mr-2" />
-                            Galeri Proyek
-                        </Link>
+            <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 text-white py-24 overflow-hidden">
+                {/* Decorative background elements */}
+                <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl"></div>
+                    <div className="absolute -bottom-1/2 -left-1/4 w-96 h-96 bg-indigo-500/30 rounded-full blur-3xl"></div>
+                </div>
+                
+                <div className="max-w-7xl mx-auto px-4 relative z-10">
+                    <div className="text-center">
+                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/20">
+                            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                            <span className="text-sm font-medium">Terakreditasi A</span>
+                        </div>
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent animate-fade-in">
+                            Program Studi
+                            <br />
+                            <span className="bg-gradient-to-r from-blue-200 via-white to-blue-200 bg-clip-text">Teknik Perangkat Lunak</span>
+                        </h1>
+                        <p className="text-lg md:text-2xl text-blue-100 mb-8 max-w-4xl mx-auto leading-relaxed">
+                            Mencetak tenaga profesional di bidang pengembangan perangkat lunak dengan 
+                            <span className="font-semibold text-white"> standar industri modern</span> dan 
+                            <span className="font-semibold text-white">inovasi teknologi terkini</span>
+                        </p>
+                        <div className="flex flex-wrap gap-4 justify-center">
+                            <Link href="/profil" className="group bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center gap-2">
+                                <FaRocket className="group-hover:rotate-12 transition-transform" />
+                                Tentang Program
+                            </Link>
+                            <Link href="/mahasiswa" className="group bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:bg-white hover:text-blue-600 px-8 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2">
+                                <FaProjectDiagram className="group-hover:scale-110 transition-transform" />
+                                Galeri Proyek
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Stats Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-600 hover:shadow-lg transition duration-300">
-                    <div className="flex items-center mb-4">
-                        <FaChalkboardTeacher className="text-blue-600 text-3xl mr-4" />
-                        <h3 className="text-xl font-semibold">Dosen</h3>
+            <div className="max-w-7xl mx-auto px-4 -mt-16 relative z-20 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="group bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-t-4 border-blue-600 hover:-translate-y-2">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="bg-blue-100 p-4 rounded-xl group-hover:bg-blue-600 group-hover:scale-110 transition-all duration-300">
+                                <FaChalkboardTeacher className="text-blue-600 group-hover:text-white text-4xl transition-colors" />
+                            </div>
+                        </div>
+                        <p className="text-4xl font-bold text-gray-800 mb-2">{loading ? '...' : stats.dosen}</p>
+                        <h3 className="text-lg font-semibold text-gray-700 mb-1">Dosen</h3>
+                        <p className="text-gray-500 text-sm">Tenaga Pengajar Profesional</p>
                     </div>
-                    <p className="text-3xl font-bold text-gray-800">{loading ? '...' : stats.dosen}</p>
-                    <p className="text-gray-500 mt-2">Tenaga Pengajar Profesional</p>
-                </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-cyan-500 hover:shadow-lg transition duration-300">
-                    <div className="flex items-center mb-4">
-                        <FaProjectDiagram className="text-cyan-500 text-3xl mr-4" />
-                        <h3 className="text-xl font-semibold">Proyek Mahasiswa</h3>
+                    <div className="group bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-t-4 border-indigo-600 hover:-translate-y-2">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="bg-indigo-100 p-4 rounded-xl group-hover:bg-indigo-600 group-hover:scale-110 transition-all duration-300">
+                                <FaProjectDiagram className="text-indigo-600 group-hover:text-white text-4xl transition-colors" />
+                            </div>
+                        </div>
+                        <p className="text-4xl font-bold text-gray-800 mb-2">{loading ? '...' : stats.projects}</p>
+                        <h3 className="text-lg font-semibold text-gray-700 mb-1">Proyek Mahasiswa</h3>
+                        <p className="text-gray-500 text-sm">Karya Inovatif Mahasiswa</p>
                     </div>
-                    <p className="text-3xl font-bold text-gray-800">{loading ? '...' : stats.projects}</p>
-                    <p className="text-gray-500 mt-2">Karya Inovatif Mahasiswa</p>
-                </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500 hover:shadow-lg transition duration-300">
-                    <div className="flex items-center mb-4">
-                        <FaBookOpen className="text-blue-500 text-3xl mr-4" />
-                        <h3 className="text-xl font-semibold">Mata Kuliah</h3>
+                    <div className="group bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-t-4 border-blue-500 hover:-translate-y-2">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="bg-blue-100 p-4 rounded-xl group-hover:bg-blue-500 group-hover:scale-110 transition-all duration-300">
+                                <FaBookOpen className="text-blue-500 group-hover:text-white text-4xl transition-colors" />
+                            </div>
+                        </div>
+                        <p className="text-4xl font-bold text-gray-800 mb-2">{loading ? '...' : stats.matakuliah}</p>
+                        <h3 className="text-lg font-semibold text-gray-700 mb-1">Mata Kuliah</h3>
+                        <p className="text-gray-500 text-sm">Kurikulum Lengkap</p>
                     </div>
-                    <p className="text-3xl font-bold text-gray-800">{loading ? '...' : stats.matakuliah}</p>
-                    <p className="text-gray-500 mt-2">Kurikulum Lengkap</p>
                 </div>
             </div>
 
             {/* Program Highlights */}
-            <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-8 rounded-xl mb-12">
-                <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Mengapa Teknik Perangkat Lunak?</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div className="text-center">
-                        <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <FaCode className="text-blue-600 text-2xl" />
+            <div className="max-w-7xl mx-auto px-4 mb-16">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Mengapa Teknik Perangkat Lunak?</h2>
+                    <p className="text-gray-600 text-lg max-w-2xl mx-auto">Keunggulan program studi yang mempersiapkan Anda untuk masa depan teknologi</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="group bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-blue-100 hover:-translate-y-2">
+                        <div className="bg-gradient-to-br from-blue-500 to-indigo-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
+                            <FaCode className="text-white text-3xl" />
                         </div>
-                        <h3 className="text-xl font-semibold mb-2">Teknologi Terkini</h3>
-                        <p className="text-gray-600">Belajar bahasa pemrograman modern, framework terkini, dan metodologi pengembangan perangkat lunak terkini.</p>
+                        <h3 className="text-xl font-bold mb-3 text-gray-800 text-center">Teknologi Terkini</h3>
+                        <p className="text-gray-600 text-center leading-relaxed">Belajar bahasa pemrograman modern, framework terkini, dan metodologi pengembangan perangkat lunak yang digunakan industri global.</p>
                     </div>
-                    <div className="text-center">
-                        <div className="bg-cyan-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <FaUsers className="text-cyan-600 text-2xl" />
+                    <div className="group bg-gradient-to-br from-indigo-50 to-blue-50 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-indigo-100 hover:-translate-y-2">
+                        <div className="bg-gradient-to-br from-indigo-500 to-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
+                            <FaUsers className="text-white text-3xl" />
                         </div>
-                        <h3 className="text-xl font-semibold mb-2">Kolaborasi Tim</h3>
-                        <p className="text-gray-600">Pengalaman kerja tim dalam proyek-proyek nyata yang melibatkan mahasiswa dari berbagai disiplin ilmu.</p>
+                        <h3 className="text-xl font-bold mb-3 text-gray-800 text-center">Kolaborasi Tim</h3>
+                        <p className="text-gray-600 text-center leading-relaxed">Pengalaman kerja tim dalam proyek-proyek nyata yang melibatkan mahasiswa dari berbagai disiplin ilmu dan industri.</p>
                     </div>
-                    <div className="text-center">
-                        <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <FaRocket className="text-blue-600 text-2xl" />
+                    <div className="group bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-blue-100 hover:-translate-y-2">
+                        <div className="bg-gradient-to-br from-blue-600 to-indigo-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
+                            <FaRocket className="text-white text-3xl" />
                         </div>
-                        <h3 className="text-xl font-semibold mb-2">Inovasi & Startup</h3>
-                        <p className="text-gray-600">Mendukung mahasiswa dalam mengembangkan ide inovatif dan membangun startup teknologi.</p>
+                        <h3 className="text-xl font-bold mb-3 text-gray-800 text-center">Inovasi & Startup</h3>
+                        <p className="text-gray-600 text-center leading-relaxed">Mendukung mahasiswa dalam mengembangkan ide inovatif dan membangun startup teknologi yang berdampak.</p>
                     </div>
                 </div>
             </div>
 
             {/* Quick Links Section */}
-            <div className="mb-12">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Eksplorasi Program</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <Link href="/profil" className="flex items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 group">
-                        <div className="bg-blue-100 p-3 rounded-lg mr-4 group-hover:bg-blue-200 transition-colors">
-                            <FaRocket className="text-blue-600 text-2xl" />
+            <div className="max-w-7xl mx-auto px-4 mb-16">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Eksplorasi Program</h2>
+                    <p className="text-gray-600 text-lg">Jelajahi berbagai aspek program studi kami</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <Link href="/profil" className="group bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:-translate-y-2 hover:border-blue-300">
+                        <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-4 rounded-xl mb-4 group-hover:scale-110 transition-transform shadow-md">
+                            <FaRocket className="text-white text-3xl mx-auto" />
                         </div>
-                        <div>
-                            <h3 className="font-semibold text-gray-800">Profil Program</h3>
-                            <p className="text-gray-600 text-sm">Visi, misi, dan kurikulum lengkap</p>
-                        </div>
+                        <h3 className="font-bold text-gray-800 text-lg mb-2 text-center">Profil Program</h3>
+                        <p className="text-gray-600 text-sm text-center">Visi, misi, dan kurikulum lengkap</p>
                     </Link>
 
-                    <Link href="/dosen" className="flex items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 group">
-                        <div className="bg-cyan-100 p-3 rounded-lg mr-4 group-hover:bg-cyan-200 transition-colors">
-                            <FaChalkboardTeacher className="text-cyan-600 text-2xl" />
+                    <Link href="/dosen" className="group bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:-translate-y-2 hover:border-indigo-300">
+                        <div className="bg-gradient-to-br from-indigo-500 to-blue-600 p-4 rounded-xl mb-4 group-hover:scale-110 transition-transform shadow-md">
+                            <FaChalkboardTeacher className="text-white text-3xl mx-auto" />
                         </div>
-                        <div>
-                            <h3 className="font-semibold text-gray-800">Dosen Pengajar</h3>
-                            <p className="text-gray-600 text-sm">Tim pengajar profesional dan berpengalaman</p>
-                        </div>
+                        <h3 className="font-bold text-gray-800 text-lg mb-2 text-center">Dosen Pengajar</h3>
+                        <p className="text-gray-600 text-sm text-center">Tim pengajar profesional</p>
                     </Link>
 
-                    <Link href="/mahasiswa" className="flex items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 group">
-                        <div className="bg-blue-100 p-3 rounded-lg mr-4 group-hover:bg-blue-200 transition-colors">
-                            <FaProjectDiagram className="text-blue-600 text-2xl" />
+                    <Link href="/mahasiswa" className="group bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:-translate-y-2 hover:border-blue-300">
+                        <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-4 rounded-xl mb-4 group-hover:scale-110 transition-transform shadow-md">
+                            <FaProjectDiagram className="text-white text-3xl mx-auto" />
                         </div>
-                        <div>
-                            <h3 className="font-semibold text-gray-800">Galeri Proyek</h3>
-                            <p className="text-gray-600 text-sm">Karya inovatif mahasiswa</p>
-                        </div>
+                        <h3 className="font-bold text-gray-800 text-lg mb-2 text-center">Galeri Proyek</h3>
+                        <p className="text-gray-600 text-sm text-center">Karya inovatif mahasiswa</p>
                     </Link>
 
-                    <Link href="/pengumuman" className="flex items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 group lg:col-start-2 lg:col-span-1">
-                        <div className="bg-cyan-100 p-3 rounded-lg mr-4 group-hover:bg-cyan-200 transition-colors">
-                            <FaBookOpen className="text-cyan-600 text-2xl" />
+                    <Link href="/matakuliah" className="group bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:-translate-y-2 hover:border-indigo-300">
+                        <div className="bg-gradient-to-br from-indigo-600 to-blue-600 p-4 rounded-xl mb-4 group-hover:scale-110 transition-transform shadow-md">
+                            <FaBookOpen className="text-white text-3xl mx-auto" />
                         </div>
-                        <div>
-                            <h3 className="font-semibold text-gray-800">Mata Kuliah</h3>
-                            <p className="text-gray-600 text-sm">Kurikulum dan mata kuliah program</p>
-                        </div>
+                        <h3 className="font-bold text-gray-800 text-lg mb-2 text-center">Mata Kuliah</h3>
+                        <p className="text-gray-600 text-sm text-center">Kurikulum program</p>
                     </Link>
                 </div>
             </div>
 
             {/* About Section */}
-            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-xl shadow-sm mb-16">
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold mb-6 text-gray-800">Bergabung dengan Komunitas Teknologi</h2>
-                    <p className="text-gray-700 mb-6 max-w-3xl mx-auto text-lg">
-                        Program Studi Teknik Perangkat Lunak menyediakan lingkungan belajar yang inovatif dan mendukung,
-                        di mana mahasiswa dapat mengembangkan kemampuan teknis dan soft skills yang dibutuhkan di era digital.
-                    </p>
-                    <div className="flex flex-wrap gap-4 justify-center">
-                        <Link href="/profil" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition duration-300">
-                            Pelajari Lebih Lanjut
-                        </Link>
-                        <Link href="/mahasiswa" className="bg-white hover:bg-gray-50 text-blue-600 border border-blue-600 px-8 py-3 rounded-lg font-semibold transition duration-300">
-                            Lihat Proyek Mahasiswa
-                        </Link>
+            <div className="max-w-7xl mx-auto px-4 mb-16">
+                <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 p-12 md:p-16 rounded-3xl shadow-2xl overflow-hidden">
+                    {/* Decorative elements */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-32 -mb-32"></div>
+                    
+                    <div className="relative z-10 text-center">
+                        <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">Bergabung dengan Komunitas Teknologi</h2>
+                        <p className="text-blue-100 mb-8 max-w-3xl mx-auto text-lg md:text-xl leading-relaxed">
+                            Program Studi Teknik Perangkat Lunak menyediakan lingkungan belajar yang inovatif dan mendukung,
+                            di mana mahasiswa dapat mengembangkan kemampuan teknis dan soft skills yang dibutuhkan di era digital.
+                        </p>
+                        <div className="flex flex-wrap gap-4 justify-center">
+                            <Link href="/profil" className="group bg-white hover:bg-blue-50 text-blue-600 px-8 py-4 rounded-xl font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center gap-2">
+                                Pelajari Lebih Lanjut
+                                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                            </Link>
+                            <Link href="/mahasiswa" className="group bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border-2 border-white/30 px-8 py-4 rounded-xl font-bold transition-all duration-300 flex items-center gap-2">
+                                Lihat Proyek Mahasiswa
+                                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

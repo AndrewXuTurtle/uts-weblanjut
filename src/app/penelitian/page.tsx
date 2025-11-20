@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FiSearch, FiCalendar, FiBookOpen, FiCheckCircle, FiClock, FiTrendingUp, FiUser } from 'react-icons/fi';
 import { getPenelitian } from '@/lib/api';
 
@@ -29,6 +30,7 @@ interface Penelitian {
 }
 
 export default function PenelitianPage() {
+  const router = useRouter();
   const [data, setData] = useState<Penelitian[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -204,7 +206,8 @@ export default function PenelitianPage() {
               {filteredData.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100"
+                  onClick={() => router.push(`/penelitian/${item.id}`)}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 cursor-pointer hover:-translate-y-2"
                 >
                   {/* Header with status */}
                   <div className="bg-gradient-to-r from-blue-500 to-indigo-500 p-4">

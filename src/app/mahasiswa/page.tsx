@@ -26,12 +26,13 @@ type Project = {
     teknologi: string;
     dosen_pembimbing: string | null;
     cover_image: string | null;
+    cover_image_url?: string | null;  // Laravel API field
     galeri: string | null;
+    galeri_urls?: string[];           // Laravel API field
     link_demo: string | null;
     link_github: string | null;
     status: string;
-    foto_utama_url?: string | null;
-    galeri_urls?: string[];
+    foto_utama_url?: string | null;   // Legacy support
 };
 
 export default function ProjectsPage() {
@@ -100,14 +101,25 @@ export default function ProjectsPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
             {/* Hero Section */}
-            <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white py-16">
-                <div className="max-w-7xl mx-auto px-4">
+            <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 text-white py-20 overflow-hidden">
+                {/* Decorative background */}
+                <div className="absolute inset-0">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
+                </div>
+                
+                <div className="max-w-7xl mx-auto px-4 relative z-10">
                     <div className="text-center">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
+                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/20">
+                            <FiFolder className="text-blue-200" />
+                            <span className="text-sm font-medium">Karya Mahasiswa</span>
+                        </div>
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
                             Galeri Proyek Mahasiswa
                         </h1>
-                        <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-                            Kumpulan karya inovatif mahasiswa Program Studi Teknik Perangkat Lunak
+                        <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+                            Kumpulan karya inovatif mahasiswa Program Studi
+                            <span className="font-semibold text-white"> Teknik Perangkat Lunak</span>
                         </p>
                     </div>
 
@@ -190,32 +202,35 @@ export default function ProjectsPage() {
                             {filteredData.map((project) => (
                                 <div
                                     key={project.id}
-                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100"
+                                    className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-2 cursor-pointer"
+                                    onClick={() => router.push(`/mahasiswa/${project.id}`)}
                                 >
                                     {/* Project Image */}
-                                    <div className="relative h-48 overflow-hidden">
-                                        {project.foto_utama_url ? (
+                                    <div className="relative h-56 overflow-hidden">
+                                        {(project.cover_image_url || project.foto_utama_url) ? (
                                             <Image
-                                                src={project.foto_utama_url}
+                                                src={(project.cover_image_url || project.foto_utama_url) as string}
                                                 alt={project.judul_project}
                                                 fill
-                                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                onError={(e) => {
+                                                    // Hide image on error and show placeholder
+                                                    (e.target as HTMLImageElement).style.display = 'none';
+                                                }}
                                             />
                                         ) : (
-                                            <div className="w-full h-full bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
-                                                <FiFolder className="w-16 h-16 text-gray-400" />
+                                            <div className="w-full h-full bg-gradient-to-br from-blue-100 via-indigo-100 to-blue-200 flex items-center justify-center">
+                                                <FiFolder className="w-20 h-20 text-blue-400" />
                                             </div>
                                         )}
-                                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
-                                            <span className="text-sm font-semibold text-gray-800">{project.tahun_selesai}</span>
+                                        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
+                                            <span className="text-sm font-bold text-gray-800">{project.tahun_selesai}</span>
                                         </div>
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                            <div
-                                                className="bg-white rounded-full p-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                                                onClick={() => router.push(`/mahasiswa/${project.id}`)}
-                                                title="View Project Details"
-                                            >
-                                                <FiEye className="w-6 h-6 text-gray-800" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                                                <div className="bg-white rounded-full p-3 shadow-xl">
+                                                    <FiEye className="w-6 h-6 text-blue-600" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

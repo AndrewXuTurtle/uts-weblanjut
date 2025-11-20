@@ -26,12 +26,13 @@ type Project = {
     teknologi: string;
     dosen_pembimbing: string | null;
     cover_image: string | null;
+    cover_image_url?: string | null;  // Laravel API field
     galeri: string | null;
+    galeri_urls?: string[];           // Laravel API field
     link_demo: string | null;
     link_github: string | null;
     status: string;
-    foto_utama_url?: string | null;
-    galeri_urls?: string[];
+    foto_utama_url?: string | null;   // Legacy support
 };
 
 export default function ProjectDetailPage() {
@@ -119,14 +120,17 @@ export default function ProjectDetailPage() {
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* Main Image */}
-                        {project.foto_utama_url && (
+                        {(project.cover_image_url || project.foto_utama_url) && (
                             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                                 <div className="relative h-96">
                                     <Image
-                                        src={project.foto_utama_url}
+                                        src={(project.cover_image_url || project.foto_utama_url) as string}
                                         alt={project.judul_project}
                                         fill
                                         className="object-cover"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).style.display = 'none';
+                                        }}
                                     />
                                 </div>
                             </div>

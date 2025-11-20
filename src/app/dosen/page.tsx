@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FiMail, FiBookOpen, FiBriefcase, FiUsers, FiAward, FiExternalLink } from 'react-icons/fi';
 import Image from "next/image";
 import { getDosen } from '@/lib/api';
@@ -23,6 +24,7 @@ type Dosen = {
 
 
 export default function Profil() {
+    const router = useRouter();
     const [data, setData] = useState<Dosen[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -72,14 +74,25 @@ export default function Profil() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
             {/* Hero Section */}
-            <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white py-16">
-                <div className="max-w-7xl mx-auto px-4">
+            <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 text-white py-20 overflow-hidden">
+                {/* Decorative background */}
+                <div className="absolute inset-0">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
+                </div>
+                
+                <div className="max-w-7xl mx-auto px-4 relative z-10">
                     <div className="text-center">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/20">
+                            <FiAward className="text-yellow-300" />
+                            <span className="text-sm font-medium">Tenaga Pengajar Berkualitas</span>
+                        </div>
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
                             Dosen Berkualitas
                         </h1>
-                        <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-                            Tenaga Pengajar Profesional Program Studi Teknik Perangkat Lunak
+                        <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+                            Tenaga Pengajar Profesional Program Studi
+                            <span className="font-semibold text-white"> Teknik Perangkat Lunak</span>
                         </p>
                     </div>
 
@@ -127,43 +140,45 @@ export default function Profil() {
                             {filteredData.map((dosen) => (
                                 <div
                                     key={dosen.id}
-                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100"
+                                    onClick={() => router.push(`/dosen/${dosen.id}`)}
+                                    className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-2 cursor-pointer"
                                 >
                                     {/* Header with Photo */}
-                                    <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-32 relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-black/20"></div>
-                                        <div className="absolute bottom-4 left-6 flex items-center space-x-4">
-                                            <div className="bg-white rounded-full p-1 shadow-lg">
+                                    <div className="relative bg-gradient-to-br from-blue-600 to-indigo-700 h-40 overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                                        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+                                            <div className="relative">
+                                                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full blur-md opacity-75 group-hover:opacity-100 transition-opacity"></div>
                                                 {dosen.foto_url ? (
                                                     <Image
                                                         src={dosen.foto_url}
                                                         alt={`Foto ${dosen.nama}`}
-                                                        width={80}
-                                                        height={80}
-                                                        className="w-20 h-20 rounded-full object-cover"
+                                                        width={96}
+                                                        height={96}
+                                                        className="relative w-24 h-24 rounded-full object-cover border-4 border-white shadow-xl group-hover:scale-110 transition-transform"
                                                     />
                                                 ) : (
-                                                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-2xl">
+                                                    <div className="relative w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-3xl border-4 border-white shadow-xl group-hover:scale-110 transition-transform">
                                                         {dosen.nama.charAt(0)}
                                                     </div>
                                                 )}
-                                            </div>
-                                            <div className="text-white">
-                                                <h3 className="text-xl font-bold mb-1">{dosen.nama}</h3>
-                                                <p className="text-blue-100 text-sm">NIDN: {dosen.nidn}</p>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Content */}
-                                    <div className="p-6">
+                                    <div className="p-6 pt-16">
+                                        <div className="text-center mb-6">
+                                            <h3 className="text-xl font-bold text-gray-800 mb-1">{dosen.nama}</h3>
+                                            <p className="text-blue-600 text-sm font-medium">NIDN: {dosen.nidn}</p>
+                                        </div>
                                         <div className="space-y-4">
-                                            <div className="flex items-start space-x-3">
-                                                <div className="bg-blue-100 rounded-lg p-2">
-                                                    <FiBriefcase className="w-5 h-5 text-blue-600" />
+                                            <div className="flex items-start space-x-3 group/item hover:bg-blue-50 p-3 rounded-xl transition-colors">
+                                                <div className="bg-blue-100 rounded-lg p-2.5 group-hover/item:bg-blue-600 group-hover/item:scale-110 transition-all">
+                                                    <FiBriefcase className="w-5 h-5 text-blue-600 group-hover/item:text-white transition-colors" />
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-500">Jabatan</p>
+                                                <div className="flex-1">
+                                                    <p className="text-xs font-medium text-gray-500 mb-1">Jabatan</p>
                                                     <p className="text-gray-900 font-semibold">{dosen.jabatan}</p>
                                                     {dosen.bidang_keahlian && (
                                                         <p className="text-gray-600 text-sm mt-1">{dosen.bidang_keahlian}</p>
@@ -171,23 +186,23 @@ export default function Profil() {
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-start space-x-3">
-                                                <div className="bg-green-100 rounded-lg p-2">
-                                                    <FiBookOpen className="w-5 h-5 text-green-600" />
+                                            <div className="flex items-start space-x-3 group/item hover:bg-green-50 p-3 rounded-xl transition-colors">
+                                                <div className="bg-green-100 rounded-lg p-2.5 group-hover/item:bg-green-600 group-hover/item:scale-110 transition-all">
+                                                    <FiBookOpen className="w-5 h-5 text-green-600 group-hover/item:text-white transition-colors" />
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-500">Pendidikan</p>
+                                                <div className="flex-1">
+                                                    <p className="text-xs font-medium text-gray-500 mb-1">Pendidikan</p>
                                                     <p className="text-gray-900 font-semibold">{dosen.pendidikan_terakhir || 'S2'}</p>
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-start space-x-3">
-                                                <div className="bg-purple-100 rounded-lg p-2">
-                                                    <FiMail className="w-5 h-5 text-purple-600" />
+                                            <div className="flex items-start space-x-3 group/item hover:bg-purple-50 p-3 rounded-xl transition-colors">
+                                                <div className="bg-purple-100 rounded-lg p-2.5 group-hover/item:bg-purple-600 group-hover/item:scale-110 transition-all">
+                                                    <FiMail className="w-5 h-5 text-purple-600 group-hover/item:text-white transition-colors" />
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-500">Email</p>
-                                                    <p className="text-gray-900 font-semibold break-all">{dosen.email}</p>
+                                                <div className="flex-1">
+                                                    <p className="text-xs font-medium text-gray-500 mb-1">Email</p>
+                                                    <p className="text-gray-900 font-semibold text-sm break-all">{dosen.email}</p>
                                                 </div>
                                             </div>
 

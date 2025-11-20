@@ -97,31 +97,34 @@ export default function PeraturanPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white py-16 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-10"></div>
+      <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 text-white py-20 overflow-hidden">
+        {/* Decorative background */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 animate-pulse"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
         </div>
-
-        <div className="max-w-6xl mx-auto relative z-10">
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center p-2 bg-white/10 rounded-full mb-4 backdrop-blur-sm">
-              <FiFileText className="text-4xl" />
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/20">
+              <FiFileText className="text-blue-200" />
+              <span className="text-sm font-medium">Dokumen Peraturan</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
               Peraturan & Dokumen
             </h1>
-            <p className="text-lg md:text-xl text-blue-50 max-w-3xl mx-auto">
-              Kumpulan peraturan dan dokumen penting Program Studi Teknik Informatika
+            <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Kumpulan peraturan dan dokumen penting Program Studi
+              <span className="font-semibold text-white"> Teknik Perangkat Lunak</span>
             </p>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Search Bar */}
         <div className="mb-6">
           <div className="relative">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FiSearch, FiCalendar, FiUser, FiEye, FiHeart, FiShare2, FiAward } from 'react-icons/fi';
 import { getBerita } from '@/lib/api';
 
@@ -21,6 +22,7 @@ interface Berita {
 }
 
 export default function BeritaPage() {
+  const router = useRouter();
   const [data, setData] = useState<Berita[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,14 +85,25 @@ export default function BeritaPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4">
+      <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 text-white py-20 overflow-hidden">
+        {/* Decorative background */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/20">
+              <FiAward className="text-yellow-300" />
+              <span className="text-sm font-medium">Berita & Informasi</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
               Berita
             </h1>
-            <p className="text-xl md:text-2xl text-purple-100 mb-8 max-w-3xl mx-auto">
-              Informasi terkini dan berita terbaru dari Program Studi Teknik Perangkat Lunak
+            <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Informasi terkini dan berita terbaru dari Program Studi
+              <span className="font-semibold text-white"> Teknik Perangkat Lunak</span>
             </p>
           </div>
 
@@ -175,15 +188,20 @@ export default function BeritaPage() {
               {filteredData.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100"
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 cursor-pointer hover:-translate-y-2"
+                  onClick={() => router.push(`/berita/${item.id}`)}
                 >
                   {/* Image */}
-                  {item.gambar && (
+                  {(item.gambar_url || item.gambar) && (
                     <div className="relative h-48 overflow-hidden">
                       <img
-                        src={item.gambar}
+                        src={item.gambar_url || item.gambar}
                         alt={item.judul}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          // Fallback to placeholder if image fails to load
+                          (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23f3f4f6" width="400" height="300"/%3E%3Ctext fill="%239ca3af" font-family="sans-serif" font-size="18" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
+                        }}
                       />
                       <div className="absolute top-4 left-4">
                         <span className="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
