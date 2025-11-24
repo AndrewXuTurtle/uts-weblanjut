@@ -32,6 +32,11 @@ interface Statistics {
   status_pekerjaan: Record<string, number>;
   avg_kepuasan_prodi?: number;
   employment_rate?: number;
+  avg_gaji?: number;
+  avg_waktu_tunggu_kerja?: number;
+  kesesuaian_bidang_studi?: Record<string, number>;
+  waktu_tunggu_kerja_distribution?: Record<string, number>;
+  top_companies?: Array<{ nama_perusahaan: string; total: number }>;
 }
 
 export default function TracerStudyPage() {
@@ -166,25 +171,32 @@ export default function TracerStudyPage() {
 
           {/* Main Statistics */}
           {statistics && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center border border-white/20">
                 <FiUsers className="w-12 h-12 mx-auto mb-4 text-blue-200" />
-                <div className="text-3xl font-bold mb-2">{statistics.total_respondents}</div>
-                <div className="text-blue-100">Total Responden</div>
+                <div className="text-4xl font-bold mb-2">{statistics.total_respondents}</div>
+                <div className="text-blue-100 text-sm">Total Responden</div>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-                <FiBriefcase className="w-12 h-12 mx-auto mb-4 text-indigo-200" />
-                <div className="text-3xl font-bold mb-2">{statistics.employment_rate || 0}%</div>
-                <div className="text-blue-100">Employment Rate</div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center border border-white/20">
+                <FiBriefcase className="w-12 h-12 mx-auto mb-4 text-green-200" />
+                <div className="text-4xl font-bold mb-2">{statistics.employment_rate || 0}%</div>
+                <div className="text-blue-100 text-sm">Employment Rate</div>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center border border-white/20">
+                <FiDollarSign className="w-12 h-12 mx-auto mb-4 text-yellow-200" />
+                <div className="text-4xl font-bold mb-2">
+                  {statistics.avg_gaji ? `${(statistics.avg_gaji / 1000000).toFixed(1)}Jt` : 'N/A'}
+                </div>
+                <div className="text-blue-100 text-sm">Rata-rata Gaji</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center border border-white/20">
                 <FiStar className="w-12 h-12 mx-auto mb-4 text-purple-200" />
-                <div className="text-3xl font-bold mb-2">
+                <div className="text-4xl font-bold mb-2">
                   {statistics.avg_kepuasan_prodi !== null && statistics.avg_kepuasan_prodi !== undefined 
                     ? Number(statistics.avg_kepuasan_prodi).toFixed(1) 
                     : 'N/A'}/5
                 </div>
-                <div className="text-blue-100">Kepuasan Prodi</div>
+                <div className="text-blue-100 text-sm">Kepuasan Prodi</div>
               </div>
             </div>
           )}
@@ -194,6 +206,100 @@ export default function TracerStudyPage() {
       <div className="max-w-7xl mx-auto px-4 py-12">
         {statistics && (
           <>
+            {/* Kesesuaian Bidang Studi */}
+            {statistics.kesesuaian_bidang_studi && Object.keys(statistics.kesesuaian_bidang_studi).length > 0 && (
+              <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <div className="flex items-center mb-6">
+                  <FiAward className="w-6 h-6 text-green-600 mr-3" />
+                  <h2 className="text-2xl font-bold text-gray-800">Kesesuaian Bidang Studi dengan Pekerjaan</h2>
+                </div>
+                <div className="space-y-4">
+                  {Object.entries(statistics.kesesuaian_bidang_studi).map(([key, value]) => {
+                    const percentage = statistics.total_respondents > 0 
+                      ? ((value / statistics.total_respondents) * 100).toFixed(1) 
+                      : 0;
+                    const colorClass = key === 'Sangat Sesuai' ? 'bg-green-500' :
+                                      key === 'Sesuai' ? 'bg-blue-500' :
+                                      key === 'Cukup Sesuai' ? 'bg-yellow-500' :
+                                      key === 'Kurang Sesuai' ? 'bg-orange-500' : 'bg-red-500';
+                    
+                    return (
+                      <div key={key} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-700 font-medium">{key}</span>
+                          <span className="text-gray-600 text-sm">
+                            {value} alumni ({percentage}%)
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className={`h-full ${colorClass} rounded-full transition-all duration-500`}
+                            style={{ width: `${percentage}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Waktu Tunggu Kerja */}
+            {statistics.waktu_tunggu_kerja_distribution && Object.keys(statistics.waktu_tunggu_kerja_distribution).length > 0 && (
+              <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <div className="flex items-center mb-6">
+                  <FiClock className="w-6 h-6 text-orange-600 mr-3" />
+                  <h2 className="text-2xl font-bold text-gray-800">Waktu Tunggu Mendapat Pekerjaan</h2>
+                  {statistics.avg_waktu_tunggu_kerja && (
+                    <span className="ml-auto text-sm bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-medium">
+                      Rata-rata: {statistics.avg_waktu_tunggu_kerja} bulan
+                    </span>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Object.entries(statistics.waktu_tunggu_kerja_distribution).map(([key, value]) => {
+                    const percentage = statistics.total_respondents > 0 
+                      ? ((value / statistics.total_respondents) * 100).toFixed(0) 
+                      : 0;
+                    const label = key.replace(/_/g, ' ').replace(/bulan/g, 'Bulan');
+                    
+                    return (
+                      <div key={key} className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-5 border border-orange-100 text-center">
+                        <div className="text-3xl font-bold text-orange-600 mb-2">{value}</div>
+                        <div className="text-sm text-gray-600 mb-1 capitalize">{label}</div>
+                        <div className="text-xs text-gray-500">{percentage}%</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Top Companies */}
+            {statistics.top_companies && statistics.top_companies.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <div className="flex items-center mb-6">
+                  <FiTrendingUp className="w-6 h-6 text-purple-600 mr-3" />
+                  <h2 className="text-2xl font-bold text-gray-800">Top Perusahaan Alumni Bekerja</h2>
+                </div>
+                <div className="space-y-3">
+                  {statistics.top_companies.slice(0, 10).map((company, index) => (
+                    <div key={index} className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100 hover:shadow-md transition-shadow">
+                      <div className="flex-shrink-0 w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800">{company.nama_perusahaan}</h3>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-purple-600">{company.total}</div>
+                        <div className="text-xs text-gray-500">alumni</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* Status Pekerjaan */}
             <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
               <div className="flex items-center mb-6">
