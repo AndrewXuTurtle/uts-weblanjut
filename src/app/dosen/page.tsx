@@ -1,10 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { FiMail, FiBookOpen, FiBriefcase, FiUsers, FiAward, FiExternalLink } from 'react-icons/fi';
+import { FiMail, FiBookOpen, FiBriefcase, FiUsers, FiAward, FiExternalLink, FiX, FiPhone } from 'react-icons/fi';
 import Image from "next/image";
-import { getDosen } from '@/lib/api';
 
 type Dosen = {
     id: number;
@@ -24,22 +22,29 @@ type Dosen = {
 
 
 export default function Profil() {
-    const router = useRouter();
     const [data, setData] = useState<Dosen[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedDosen, setSelectedDosen] = useState<Dosen | null>(null);
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await getDosen({ status: 'Aktif' });
-            if (response.success) {
-                // Handle direct array response (Format A - auto-normalized)
-                const dosenData = Array.isArray(response.data) ? response.data : [];
-                setData(dosenData);
-            } else {
-                throw new Error("Failed to fetch dosen");
+            const response = await fetch('/api/dosen');
+            if (!response.ok) throw new Error("Failed to fetch dosen");
+            
+            const json = await response.json();
+            
+            // Handle Laravel paginated response structure
+            let dosenData = [];
+            if (json.success && json.data) {
+                // Check if it's paginated response (has data.data)
+                dosenData = json.data.data || json.data;
+            } else if (Array.isArray(json)) {
+                dosenData = json;
             }
+            
+            setData(Array.isArray(dosenData) ? dosenData : []);
         } catch (err: unknown) {
             setError((err as Error).message);
         } finally {
@@ -140,7 +145,7 @@ export default function Profil() {
                             {filteredData.map((dosen) => (
                                 <div
                                     key={dosen.id}
-                                    onClick={() => router.push(`/dosen/${dosen.id}`)}
+                                    onClick={() => setSelectedDosen(dosen)}
                                     className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-2 cursor-pointer"
                                 >
                                     {/* Header with Photo */}
@@ -255,6 +260,215 @@ export default function Profil() {
                     </>
                 )}
             </div>
+
+            {/* Modal Popup */}
+            {selectedDosen && (
+                <div 
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn"
+                    onClick={() => setSelectedDosen(null)}
+                >
+                    <div 
+                        className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-slideUp"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Header */}
+                        <div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white p-8 rounded-t-3xl">
+                            <button
+                                onClick={() => setSelectedDosen(null)}
+                                className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-2 transition-all hover:rotate-90 duration-300"
+                            >
+                                <FiX className="w-6 h-6" />
+                            </button>
+                            
+                            <div className="flex flex-col items-center">
+                                <div className="relative mb-4">
+                                    <div className="absolute inset-0 bg-white/30 rounded-full blur-xl"></div>
+                                    {selectedDosen.foto_url ? (
+                                        <Image
+                                            src={selectedDosen.foto_url}
+                                            alt={selectedDosen.nama}
+                                            width={120}
+                                            height={120}
+                                            className="relative w-30 h-30 rounded-full object-cover border-4 border-white shadow-2xl"
+                                        />
+                                    ) : (
+                                        <div className="relative w-30 h-30 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white font-bold text-5xl border-4 border-white shadow-2xl">
+                                            {selectedDosen.nama.charAt(0)}
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <h2 className="text-3xl font-bold mb-2 text-center">{selectedDosen.nama}</h2>
+                                <p className="text-blue-100 font-medium mb-1">NIDN: {selectedDosen.nidn}</p>
+                                <div className="flex flex-wrap gap-2 justify-center mt-3">
+                                    <span className="bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-medium">
+                                        {selectedDosen.jabatan}
+                                    </span>
+                                    <span className="bg-green-400/30 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-medium">
+                                        {selectedDosen.status || 'Aktif'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-8 space-y-6">
+                            {/* Contact Info */}
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-4">
+                                    <div className="w-1 h-6 bg-blue-600 rounded-full"></div>
+                                    Informasi Kontak
+                                </h3>
+                                
+                                <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl hover:shadow-md transition-shadow">
+                                    <div className="bg-blue-600 rounded-xl p-3">
+                                        <FiMail className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm text-gray-500 mb-1">Email</p>
+                                        <a href={`mailto:${selectedDosen.email}`} className="text-gray-900 font-semibold hover:text-blue-600 transition-colors break-all">
+                                            {selectedDosen.email}
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {selectedDosen.no_hp && (
+                                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl hover:shadow-md transition-shadow">
+                                        <div className="bg-green-600 rounded-xl p-3">
+                                            <FiPhone className="w-5 h-5 text-white" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-sm text-gray-500 mb-1">No. Telepon</p>
+                                            <a href={`tel:${selectedDosen.no_hp}`} className="text-gray-900 font-semibold hover:text-green-600 transition-colors">
+                                                {selectedDosen.no_hp}
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Academic Info */}
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-4">
+                                    <div className="w-1 h-6 bg-purple-600 rounded-full"></div>
+                                    Informasi Akademik
+                                </h3>
+                                
+                                {selectedDosen.bidang_keahlian && (
+                                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                                        <div className="bg-purple-600 rounded-xl p-3">
+                                            <FiAward className="w-5 h-5 text-white" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-sm text-gray-500 mb-1">Bidang Keahlian</p>
+                                            <p className="text-gray-900 font-semibold">{selectedDosen.bidang_keahlian}</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl">
+                                    <div className="bg-amber-600 rounded-xl p-3">
+                                        <FiBookOpen className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm text-gray-500 mb-1">Pendidikan Terakhir</p>
+                                        <p className="text-gray-900 font-semibold">{selectedDosen.pendidikan_terakhir || 'S2'}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl">
+                                    <div className="bg-cyan-600 rounded-xl p-3">
+                                        <FiBriefcase className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm text-gray-500 mb-1">Jabatan</p>
+                                        <p className="text-gray-900 font-semibold">{selectedDosen.jabatan}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Academic Links */}
+                            {(selectedDosen.google_scholar_link || selectedDosen.sinta_link || selectedDosen.scopus_link) && (
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-4">
+                                        <div className="w-1 h-6 bg-indigo-600 rounded-full"></div>
+                                        Profil Akademik
+                                    </h3>
+                                    
+                                    <div className="flex flex-wrap gap-3">
+                                        {selectedDosen.google_scholar_link && (
+                                            <a 
+                                                href={selectedDosen.google_scholar_link} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all"
+                                            >
+                                                <FiExternalLink className="w-5 h-5" />
+                                                Google Scholar
+                                            </a>
+                                        )}
+                                        {selectedDosen.sinta_link && (
+                                            <a 
+                                                href={selectedDosen.sinta_link} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all"
+                                            >
+                                                <FiExternalLink className="w-5 h-5" />
+                                                SINTA
+                                            </a>
+                                        )}
+                                        {selectedDosen.scopus_link && (
+                                            <a 
+                                                href={selectedDosen.scopus_link} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all"
+                                            >
+                                                <FiExternalLink className="w-5 h-5" />
+                                                Scopus
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-6 bg-gray-50 rounded-b-3xl border-t border-gray-100">
+                            <button
+                                onClick={() => setSelectedDosen(null)}
+                                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-xl transition-all hover:shadow-lg"
+                            >
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <style jsx>{`
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes slideUp {
+                    from { 
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to { 
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                .animate-fadeIn {
+                    animation: fadeIn 0.2s ease-out;
+                }
+                .animate-slideUp {
+                    animation: slideUp 0.3s ease-out;
+                }
+            `}</style>
         </div>
     );
 }

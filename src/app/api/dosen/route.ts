@@ -1,73 +1,31 @@
-import { db } from "../../lib/db";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-export type Dosen = {
-    id: number;
-    nidn: string;
-    nama: string;
-    email: string;
-    program_studi: string;
-    jabatan: string;
-    bidang_keahlian: string;
-    created_at: Date;
-    updated_at: Date;
-};
+const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://127.0.0.1:8000/api';
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
-        const [rows] = await db.query(`
-            SELECT
-                id,
-                nidn,
-                nama,
-                email,
-                program_studi,
-                jabatan,
-                bidang_keahlian,
-                created_at,
-                updated_at
-            FROM tbl_dosen
-        `);
-        console.log("Rows:", rows);
-        return NextResponse.json(rows as Dosen[]);
-    } catch(error: unknown) {
-        console.error("API ERROR:", error);
-        return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
-    }
-}
+        const { searchParams } = new URL(request.url);
+        const queryString = searchParams.toString();
+        const url = `${LARAVEL_API_URL}/dosen${queryString ? `?${queryString}` : ''}`;
 
-export async function POST(request: Request) {
-    try {
-        const { nidn, nama, email, program_studi, jabatan, bidang_keahlian } = await request.json();
-        
-        // Validate required fields
-        if (!nidn || !nama || !email || !program_studi || !jabatan) {
-            return NextResponse.json({ message: "Semua field harus diisi" }, { status: 400 });
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Laravel API responded with status: ${response.status}`);
         }
-        
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return NextResponse.json({ message: "Format email tidak valid" }, { status: 400 });
-        }
-        
-        // Check if NIDN already exists
-        const [existingNidn] = await db.query("SELECT id FROM tbl_dosen WHERE nidn = ?", [nidn]);
-        if (existingNidn && Array.isArray(existingNidn) && existingNidn.length > 0) {
-            return NextResponse.json({ message: "NIDN sudah terdaftar" }, { status: 409 });
-        }
-        
-        const [result] = await db.query(
-            "INSERT INTO tbl_dosen (nidn, nama, email, program_studi, jabatan, bidang_keahlian, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())",
-            [nidn, nama, email, program_studi, jabatan, bidang_keahlian || null]
-        );
-        const insertResult = result as { insertId: number };
-        return NextResponse.json({ id: insertResult.insertId, nidn, nama, email, program_studi, jabatan, bidang_keahlian });
+
+        const data = await response.json();
+        return NextResponse.json(data);
     } catch (error: unknown) {
-        console.error("POST /api/dosen error:", error);
-        return NextResponse.json({ message: (error as Error)?.message || "Internal Server Error" }, { status: 500 });
+        console.error('Error fetching from Laravel API:', error);
+        return NextResponse.json(
+            { error: 'Failed to fetch data from Laravel API' },
+            { status: 500 }
+        );
     }
 }
-
-// For PUT and DELETE, Next.js route handlers use dynamic routes for resource id
-// So create [id]/route.ts for PUT and DELETE handlers

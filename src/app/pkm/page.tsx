@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { FiSearch, FiCalendar, FiAward, FiCheckCircle, FiClock, FiTrendingUp, FiBookOpen, FiUser, FiUsers } from 'react-icons/fi';
+import { FiSearch, FiCalendar, FiAward, FiCheckCircle, FiClock, FiTrendingUp, FiBookOpen, FiUser, FiUsers, FiX, FiDollarSign } from 'react-icons/fi';
 import { getPKM } from '@/lib/api';
 
 interface Dosen {
@@ -34,10 +33,10 @@ interface PKM {
 }
 
 export default function PKMPage() {
-  const router = useRouter();
   const [data, setData] = useState<PKM[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedPKM, setSelectedPKM] = useState<PKM | null>(null);
   const [search, setSearch] = useState("");
   const [selectedTahun, setSelectedTahun] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
@@ -212,7 +211,7 @@ export default function PKMPage() {
               {filteredData.map((item) => (
                 <div
                   key={item.id}
-                  onClick={() => router.push(`/pkm/${item.id}`)}
+                  onClick={() => setSelectedPKM(item)}
                   className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 cursor-pointer hover:-translate-y-2"
                 >
                   {/* Header with status */}
@@ -290,6 +289,170 @@ export default function PKMPage() {
           </>
         )}
       </div>
+
+      {/* Modal Detail PKM */}
+      {selectedPKM && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={() => setSelectedPKM(null)}
+          style={{
+            animation: 'fadeIn 0.2s ease-out'
+          }}
+        >
+          <div
+            className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              animation: 'slideUp 0.3s ease-out'
+            }}
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 relative">
+              <button
+                onClick={() => setSelectedPKM(null)}
+                className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full p-2 transition-all duration-200 hover:rotate-90"
+              >
+                <FiX className="w-6 h-6" />
+              </button>
+              <div className="flex items-start gap-4">
+                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
+                  <FiAward className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-white mb-2">
+                    {selectedPKM.judul_pkm}
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                      {selectedPKM.jenis_pkm || 'PKM'}
+                    </span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedPKM.status === 'Selesai' ? 'bg-green-100 text-green-800' :
+                      selectedPKM.status === 'Didanai' ? 'bg-yellow-100 text-yellow-800' :
+                      selectedPKM.status === 'Diajukan' ? 'bg-blue-100 text-blue-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {selectedPKM.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+              {/* Deskripsi */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <FiBookOpen className="text-blue-600" />
+                  Deskripsi Program
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  {selectedPKM.deskripsi}
+                </p>
+              </div>
+
+              {/* Info Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {/* Tahun */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-500 rounded-lg p-2">
+                      <FiCalendar className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium">Tahun Program</p>
+                      <p className="text-lg font-bold text-gray-900">{selectedPKM.tahun}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dana */}
+                {selectedPKM.dana && (
+                  <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-4 border border-amber-100">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-amber-500 rounded-lg p-2">
+                        <FiDollarSign className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium">Dana Program</p>
+                        <p className="text-lg font-bold text-gray-900">
+                          Rp {selectedPKM.dana.toLocaleString('id-ID')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Dosen Pembimbing */}
+                {selectedPKM.dosen && (
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 md:col-span-2">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-500 rounded-lg p-2">
+                        <FiUser className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium">Dosen Pembimbing</p>
+                        <p className="text-lg font-bold text-gray-900">{selectedPKM.dosen.nama}</p>
+                        {selectedPKM.dosen.nidn && (
+                          <p className="text-sm text-gray-600">NIDN: {selectedPKM.dosen.nidn}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Tim Mahasiswa */}
+              {selectedPKM.mahasiswa && selectedPKM.mahasiswa.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <FiUsers className="text-blue-600" />
+                    Tim Mahasiswa ({selectedPKM.mahasiswa.length})
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {selectedPKM.mahasiswa.map((mahasiswa, idx) => (
+                      <div key={idx} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                        <p className="font-semibold text-gray-900">{mahasiswa.nama}</p>
+                        {mahasiswa.nim && (
+                          <p className="text-sm text-gray-600">NIM: {mahasiswa.nim}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t border-gray-100">
+              <button
+                onClick={() => setSelectedPKM(null)}
+                className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 transition-colors font-medium"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+
+          <style jsx>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes slideUp {
+              from {
+                opacity: 0;
+                transform: translateY(20px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { FiSearch, FiCalendar, FiUser, FiEye, FiHeart, FiShare2, FiAward } from 'react-icons/fi';
+import { FiSearch, FiCalendar, FiUser, FiEye, FiHeart, FiShare2, FiAward, FiX } from 'react-icons/fi';
 import { getBerita } from '@/lib/api';
+import Image from 'next/image';
 
 interface Berita {
   id: number;
@@ -22,12 +22,12 @@ interface Berita {
 }
 
 export default function BeritaPage() {
-  const router = useRouter();
   const [data, setData] = useState<Berita[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [selectedKategori, setSelectedKategori] = useState("all");
+  const [selectedBerita, setSelectedBerita] = useState<Berita | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -189,7 +189,7 @@ export default function BeritaPage() {
                 <div
                   key={item.id}
                   className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 cursor-pointer hover:-translate-y-2"
-                  onClick={() => router.push(`/berita/${item.id}`)}
+                  onClick={() => setSelectedBerita(item)}
                 >
                   {/* Image */}
                   {(item.gambar_url || item.gambar) && (
@@ -268,6 +268,142 @@ export default function BeritaPage() {
           </>
         )}
       </div>
+
+      {/* Modal Popup */}
+      {selectedBerita && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn"
+          onClick={() => setSelectedBerita(null)}
+        >
+          <div 
+            className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto animate-slideUp"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setSelectedBerita(null)}
+              className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-2 transition-all hover:rotate-90 duration-300 z-10"
+            >
+              <FiX className="w-6 h-6 text-white" />
+            </button>
+
+            {/* Header with Image */}
+            {(selectedBerita.gambar_url || selectedBerita.gambar) && (
+              <div className="relative h-64 overflow-hidden rounded-t-3xl">
+                <Image
+                  src={selectedBerita.gambar_url || selectedBerita.gambar || ''}
+                  alt={selectedBerita.judul}
+                  fill
+                  className="object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div className="absolute bottom-6 left-6">
+                  <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                    selectedBerita.is_prestasi 
+                      ? 'bg-yellow-500 text-white' 
+                      : 'bg-purple-600 text-white'
+                  }`}>
+                    {selectedBerita.is_prestasi ? '🏆 Prestasi' : '📰 Berita'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Content */}
+            <div className="p-8">
+              {/* Title */}
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                {selectedBerita.judul}
+              </h2>
+
+              {/* Meta Info */}
+              <div className="flex flex-wrap gap-4 mb-6 pb-6 border-b border-gray-200">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <FiUser className="w-5 h-5 text-purple-600" />
+                  <span className="font-medium">{selectedBerita.penulis}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <FiCalendar className="w-5 h-5 text-blue-600" />
+                  <span>
+                    {new Date(selectedBerita.tanggal || selectedBerita.tanggal_publish || '').toLocaleDateString('id-ID', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
+                </div>
+                {selectedBerita.views !== undefined && (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <FiEye className="w-5 h-5 text-green-600" />
+                    <span>{selectedBerita.views.toLocaleString()} views</span>
+                  </div>
+                )}
+                {selectedBerita.kategori && (
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+                      {selectedBerita.kategori}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Article Content */}
+              <div className="prose prose-lg max-w-none">
+                <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                  {selectedBerita.isi || selectedBerita.konten || 'Konten tidak tersedia'}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 bg-gray-50 rounded-b-3xl border-t border-gray-100 flex justify-between items-center">
+              <div className="flex gap-2">
+                <button className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors">
+                  <FiHeart className="w-5 h-5" />
+                  <span className="font-medium">Suka</span>
+                </button>
+                <button className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors">
+                  <FiShare2 className="w-5 h-5" />
+                  <span className="font-medium">Bagikan</span>
+                </button>
+              </div>
+              <button
+                onClick={() => setSelectedBerita(null)}
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold px-6 py-2 rounded-xl transition-all hover:shadow-lg"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { 
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out;
+        }
+        .animate-slideUp {
+          animation: slideUp 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

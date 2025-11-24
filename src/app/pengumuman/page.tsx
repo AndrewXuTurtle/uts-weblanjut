@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { FiSearch, FiCalendar, FiAlertTriangle, FiInfo, FiCheckCircle, FiClock, FiUser } from 'react-icons/fi';
+import { FiSearch, FiCalendar, FiAlertTriangle, FiInfo, FiCheckCircle, FiClock, FiUser, FiX, FiFileText } from 'react-icons/fi';
 import { getPengumuman } from '@/lib/api';
 
 interface Pengumuman {
@@ -19,10 +18,10 @@ interface Pengumuman {
 }
 
 export default function PengumumanPage() {
-  const router = useRouter();
   const [data, setData] = useState<Pengumuman[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedPengumuman, setSelectedPengumuman] = useState<Pengumuman | null>(null);
   const [search, setSearch] = useState("");
   const [selectedPrioritas, setSelectedPrioritas] = useState("all");
 
@@ -185,7 +184,7 @@ export default function PengumumanPage() {
               {filteredData.map((item) => (
                 <div
                   key={item.id}
-                  onClick={() => router.push(`/pengumuman/${item.id}`)}
+                  onClick={() => setSelectedPengumuman(item)}
                   className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 cursor-pointer hover:-translate-y-2"
                 >
                   {/* Header with priority */}
@@ -246,6 +245,149 @@ export default function PengumumanPage() {
           </>
         )}
       </div>
+
+      {/* Modal Detail Pengumuman */}
+      {selectedPengumuman && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={() => setSelectedPengumuman(null)}
+          style={{
+            animation: 'fadeIn 0.2s ease-out'
+          }}
+        >
+          <div
+            className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              animation: 'slideUp 0.3s ease-out'
+            }}
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 relative">
+              <button
+                onClick={() => setSelectedPengumuman(null)}
+                className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full p-2 transition-all duration-200 hover:rotate-90"
+              >
+                <FiX className="w-6 h-6" />
+              </button>
+              <div className="flex items-start gap-4">
+                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
+                  <FiInfo className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-white mb-2">
+                    {selectedPengumuman.judul}
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium capitalize">
+                      Prioritas {selectedPengumuman.prioritas}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+              {/* Isi Pengumuman */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <FiFileText className="text-blue-600" />
+                  Isi Pengumuman
+                </h3>
+                <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed">
+                  {selectedPengumuman.isi}
+                </div>
+              </div>
+
+              {/* Info Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {/* Tanggal Mulai */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-500 rounded-lg p-2">
+                      <FiCalendar className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium">Tanggal Mulai</p>
+                      <p className="text-lg font-bold text-gray-900">
+                        {new Date(selectedPengumuman.tanggal_mulai).toLocaleDateString('id-ID', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tanggal Selesai */}
+                {selectedPengumuman.tanggal_selesai && (
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-500 rounded-lg p-2">
+                        <FiClock className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium">Tanggal Selesai</p>
+                        <p className="text-lg font-bold text-gray-900">
+                          {new Date(selectedPengumuman.tanggal_selesai).toLocaleDateString('id-ID', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Penulis */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 md:col-span-2">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-500 rounded-lg p-2">
+                      <FiUser className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium">Penulis</p>
+                      <p className="text-lg font-bold text-gray-900">{selectedPengumuman.penulis}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t border-gray-100">
+              <button
+                onClick={() => setSelectedPengumuman(null)}
+                className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 transition-colors font-medium"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+
+          <style jsx>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes slideUp {
+              from {
+                opacity: 0;
+                transform: translateY(20px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }
