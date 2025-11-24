@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { FiUsers, FiBriefcase, FiTrendingUp, FiDollarSign, FiClock, FiAward, FiMessageSquare, FiBarChart2, FiStar, FiUser } from 'react-icons/fi';
-import { getTracerStudy, getTracerStudyStatistics, getTracerStudyTestimonials } from '@/lib/api';
+import { FiUsers, FiBriefcase, FiTrendingUp, FiDollarSign, FiClock, FiAward, FiStar, FiUser } from 'react-icons/fi';
+import { getTracerStudyStatistics, getTracerStudyTestimonials } from '@/lib/api';
 
 interface Mahasiswa {
   nim: string;
@@ -307,49 +307,84 @@ export default function TracerStudyPage() {
                 <h2 className="text-2xl font-bold text-gray-800">Status Pekerjaan Alumni</h2>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                {Object.entries(statistics.status_pekerjaan).map(([key, value]) => (
-                  <div key={key} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-2">{value}</div>
-                    <div className="text-sm text-gray-600">{getStatusPekerjaanLabel(key)}</div>
-                  </div>
-                ))}
+                {Object.entries(statistics.status_pekerjaan).map(([key, value]) => {
+                  const percentage = statistics.total_respondents > 0 
+                    ? ((value / statistics.total_respondents) * 100).toFixed(0) 
+                    : 0;
+                  return (
+                    <div key={key} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100 hover:shadow-lg transition-shadow">
+                      <div className="text-4xl font-bold text-blue-600 mb-2">{value}</div>
+                      <div className="text-sm text-gray-700 font-medium mb-1">{getStatusPekerjaanLabel(key)}</div>
+                      <div className="text-xs text-gray-500">{percentage}% dari total</div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-        {/* Testimonials */}
+        {/* Alumni Success Stories */}
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="flex items-center mb-6">
-            <FiMessageSquare className="w-6 h-6 text-indigo-600 mr-3" />
-            <h2 className="text-2xl font-bold text-gray-800">Saran Alumni untuk Prodi</h2>
+            <FiAward className="w-6 h-6 text-indigo-600 mr-3" />
+            <h2 className="text-2xl font-bold text-gray-800">Profil Karir Alumni</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {testimonials.map((item) => (
-              <div key={item.id} className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.slice(0, 6).map((item) => (
+              <div key={item.id} className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-100 hover:shadow-lg transition-all duration-300">
                 <div className="flex items-start space-x-4 mb-4">
-                  <div className="bg-indigo-100 rounded-full p-3">
-                    <FiUser className="w-6 h-6 text-indigo-600" />
+                  <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full p-3 shadow-lg">
+                    <FiUser className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-gray-800">{item.mahasiswa?.nama || 'Alumni'}</h3>
-                    <p className="text-sm text-gray-600">NIM: {item.nim}</p>
-                    {item.posisi && item.nama_perusahaan && (
-                      <p className="text-sm text-gray-600 mt-1">
-                        {item.posisi} - {item.nama_perusahaan}
-                      </p>
-                    )}
+                    <h3 className="font-bold text-gray-800 text-lg">{item.mahasiswa?.nama || 'Alumni'}</h3>
+                    <p className="text-xs text-gray-500">NIM: {item.nim}</p>
                   </div>
                 </div>
 
-                {item.saran_prodi && (
-                  <div className="bg-yellow-50 border-l-4 border-yellow-500 p-3">
-                    <p className="text-sm text-gray-700">{item.saran_prodi}</p>
+                {item.posisi && item.nama_perusahaan && (
+                  <div className="mb-4 p-3 bg-white rounded-lg border border-indigo-100">
+                    <div className="flex items-start gap-2 mb-2">
+                      <FiBriefcase className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-semibold text-gray-800 text-sm">{item.posisi}</p>
+                        <p className="text-xs text-gray-600">{item.nama_perusahaan}</p>
+                      </div>
+                    </div>
                   </div>
                 )}
-                
-                <div className="mt-3 flex items-center gap-4 text-xs text-gray-600">
-                  <div>Status: {item.status_pekerjaan}</div>
-                  {item.gaji && <div>Gaji: Rp {item.gaji.toLocaleString('id-ID')}</div>}
+
+                <div className="space-y-2">
+                  {item.gaji && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <FiDollarSign className="w-4 h-4 text-green-600" />
+                      <span className="font-semibold text-gray-700">Rp {item.gaji.toLocaleString('id-ID')}</span>
+                    </div>
+                  )}
+                  {item.waktu_tunggu_kerja !== undefined && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <FiClock className="w-4 h-4 text-orange-600" />
+                      <span className="text-gray-600">Tunggu kerja: {item.waktu_tunggu_kerja} bulan</span>
+                    </div>
+                  )}
+                  {item.kesesuaian_bidang_studi && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <FiAward className="w-4 h-4 text-purple-600" />
+                      <span className={`font-medium ${
+                        item.kesesuaian_bidang_studi === 'Sangat Sesuai' ? 'text-green-600' :
+                        item.kesesuaian_bidang_studi === 'Sesuai' ? 'text-blue-600' : 'text-gray-600'
+                      }`}>
+                        {item.kesesuaian_bidang_studi}
+                      </span>
+                    </div>
+                  )}
                 </div>
+
+                {item.kompetensi_didapat && (
+                  <div className="mt-4 pt-4 border-t border-indigo-100">
+                    <p className="text-xs text-gray-500 mb-1">Kompetensi:</p>
+                    <p className="text-sm text-gray-700 line-clamp-2">{item.kompetensi_didapat}</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
