@@ -44,13 +44,12 @@ export default function TracerStudyPage() {
   const [testimonials, setTestimonials] = useState<TracerStudy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState("2024");
 
-  const fetchData = async (year: string) => {
+  const fetchData = async () => {
     setLoading(true);
     try {
       const [statsResponse, testimonialsResponse] = await Promise.all([
-        getTracerStudyStatistics({ tahun_survey: parseInt(year) }),
+        getTracerStudyStatistics(),
         getTracerStudyTestimonials()
       ]);
 
@@ -70,8 +69,8 @@ export default function TracerStudyPage() {
   };
 
   useEffect(() => {
-    fetchData(selectedYear);
-  }, [selectedYear]);
+    fetchData();
+  }, []);
 
   const formatCurrency = (value: string | null) => {
     if (!value) return 'N/A';
@@ -154,19 +153,6 @@ export default function TracerStudyPage() {
               Pelacakan karir dan perkembangan alumni
               <span className="font-semibold text-white"> Teknik Perangkat Lunak</span>
             </p>
-          </div>
-
-          {/* Year Selector */}
-          <div className="flex justify-center mb-8">
-            <select
-              className="px-6 py-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/30 text-white font-medium focus:outline-none focus:ring-2 focus:ring-white/50"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-            >
-              <option value="2024" className="text-gray-900">Tahun 2024</option>
-              <option value="2023" className="text-gray-900">Tahun 2023</option>
-              <option value="2022" className="text-gray-900">Tahun 2022</option>
-            </select>
           </div>
 
           {/* Main Statistics */}
