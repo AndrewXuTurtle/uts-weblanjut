@@ -148,122 +148,81 @@ export default function Profil() {
                                     onClick={() => setSelectedDosen(dosen)}
                                     className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-2 cursor-pointer"
                                 >
-                                    {/* Header with Photo */}
-                                    <div className="relative bg-gradient-to-br from-blue-600 to-indigo-700 pt-8 pb-16 overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                                        <div className="relative flex justify-center">
-                                            <div className="relative">
-                                                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition-opacity"></div>
-                                                {dosen.foto_url ? (
-                                                    <Image
-                                                        src={dosen.foto_url}
-                                                        alt={`Foto ${dosen.nama}`}
-                                                        width={160}
-                                                        height={160}
-                                                        className="relative w-40 h-40 rounded-full object-cover border-4 border-white shadow-2xl group-hover:scale-105 transition-transform"
-                                                    />
-                                                ) : (
-                                                    <div className="relative w-40 h-40 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-5xl border-4 border-white shadow-2xl group-hover:scale-105 transition-transform">
-                                                        {dosen.nama.charAt(0)}
-                                                    </div>
-                                                )}
-                                            </div>
+                                    {/* Header with gradient */}
+                                    <div className="relative bg-gradient-to-br from-blue-600 to-indigo-700 pt-6 pb-20 overflow-hidden">
+                                        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
+                                    </div>
+
+                                    {/* Photo - positioned to overlap header */}
+                                    <div className="relative -mt-16 flex justify-center px-6">
+                                        <div className="relative">
+                                            <div className="absolute inset-0 bg-blue-400 rounded-full blur-md opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                                            {dosen.foto_url ? (
+                                                <Image
+                                                    src={dosen.foto_url}
+                                                    alt={`Foto ${dosen.nama}`}
+                                                    width={120}
+                                                    height={120}
+                                                    className="relative w-30 h-30 rounded-full object-cover border-4 border-white shadow-xl group-hover:scale-105 transition-transform"
+                                                />
+                                            ) : (
+                                                <div className="relative w-30 h-30 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-4xl border-4 border-white shadow-xl group-hover:scale-105 transition-transform">
+                                                    {dosen.nama.charAt(0)}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
                                     {/* Content */}
-                                    <div className="p-6">
-                                        <div className="text-center mb-6">
-                                            <h3 className="text-xl font-bold text-gray-800 mb-1">{dosen.nama}</h3>
+                                    <div className="px-6 pb-6 pt-4">
+                                        <div className="text-center mb-4">
+                                            <h3 className="text-lg font-bold text-gray-800 mb-1">{dosen.nama}</h3>
                                             <p className="text-blue-600 text-sm font-medium">NIDN: {dosen.nidn}</p>
                                         </div>
-                                        <div className="space-y-4">
-                                            <div className="flex items-start space-x-3 group/item hover:bg-blue-50 p-3 rounded-xl transition-colors">
-                                                <div className="bg-blue-100 rounded-lg p-2.5 group-hover/item:bg-blue-600 group-hover/item:scale-110 transition-all">
-                                                    <FiBriefcase className="w-5 h-5 text-blue-600 group-hover/item:text-white transition-colors" />
+
+                                        <div className="space-y-3">
+                                            {/* Jabatan */}
+                                            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
+                                                <div className="bg-blue-100 rounded-lg p-2">
+                                                    <FiBriefcase className="w-4 h-4 text-blue-600" />
                                                 </div>
-                                                <div className="flex-1">
-                                                    <p className="text-xs font-medium text-gray-500 mb-1">Jabatan</p>
-                                                    <p className="text-gray-900 font-semibold">{dosen.jabatan}</p>
-                                                    {dosen.bidang_keahlian && (
-                                                        <p className="text-gray-600 text-sm mt-1">{dosen.bidang_keahlian}</p>
-                                                    )}
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs text-gray-500 mb-0.5">Jabatan</p>
+                                                    <p className="text-sm font-semibold text-gray-900 truncate">{dosen.jabatan}</p>
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-start space-x-3 group/item hover:bg-green-50 p-3 rounded-xl transition-colors">
-                                                <div className="bg-green-100 rounded-lg p-2.5 group-hover/item:bg-green-600 group-hover/item:scale-110 transition-all">
-                                                    <FiBookOpen className="w-5 h-5 text-green-600 group-hover/item:text-white transition-colors" />
+                                            {/* Pendidikan */}
+                                            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
+                                                <div className="bg-green-100 rounded-lg p-2">
+                                                    <FiBookOpen className="w-4 h-4 text-green-600" />
                                                 </div>
-                                                <div className="flex-1">
-                                                    <p className="text-xs font-medium text-gray-500 mb-1">Pendidikan</p>
-                                                    <p className="text-gray-900 font-semibold">{dosen.pendidikan_terakhir || 'S2'}</p>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-start space-x-3 group/item hover:bg-purple-50 p-3 rounded-xl transition-colors">
-                                                <div className="bg-purple-100 rounded-lg p-2.5 group-hover/item:bg-purple-600 group-hover/item:scale-110 transition-all">
-                                                    <FiMail className="w-5 h-5 text-purple-600 group-hover/item:text-white transition-colors" />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="text-xs font-medium text-gray-500 mb-1">Email</p>
-                                                    <p className="text-gray-900 font-semibold text-sm break-all">{dosen.email}</p>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs text-gray-500 mb-0.5">Pendidikan</p>
+                                                    <p className="text-sm font-semibold text-gray-900 truncate">{dosen.pendidikan_terakhir || 'S2'}</p>
                                                 </div>
                                             </div>
 
-                                            {dosen.no_hp && (
-                                                <div className="flex items-start space-x-3 group/item hover:bg-orange-50 p-3 rounded-xl transition-colors">
-                                                    <div className="bg-orange-100 rounded-lg p-2.5 group-hover/item:bg-orange-600 group-hover/item:scale-110 transition-all">
-                                                        <FiPhone className="w-5 h-5 text-orange-600 group-hover/item:text-white transition-colors" />
+                                            {/* Bidang Keahlian */}
+                                            {dosen.bidang_keahlian && (
+                                                <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
+                                                    <div className="bg-purple-100 rounded-lg p-2">
+                                                        <FiAward className="w-4 h-4 text-purple-600" />
                                                     </div>
-                                                    <div className="flex-1">
-                                                        <p className="text-xs font-medium text-gray-500 mb-1">Telepon</p>
-                                                        <p className="text-gray-900 font-semibold text-sm">{dosen.no_hp}</p>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Academic Links */}
-                                            {(dosen.google_scholar_link || dosen.sinta_link || dosen.scopus_link) && (
-                                                <div className="flex items-start space-x-3">
-                                                    <div className="bg-blue-100 rounded-lg p-2">
-                                                        <FiExternalLink className="w-5 h-5 text-blue-600" />
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <p className="text-sm font-medium text-gray-500 mb-2">Profil Akademik</p>
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {dosen.google_scholar_link && (
-                                                                <a href={dosen.google_scholar_link} target="_blank" rel="noopener noreferrer" 
-                                                                   className="inline-flex items-center gap-1 text-xs bg-red-50 text-red-700 px-2 py-1 rounded hover:bg-red-100">
-                                                                    Google Scholar
-                                                                </a>
-                                                            )}
-                                                            {dosen.sinta_link && (
-                                                                <a href={dosen.sinta_link} target="_blank" rel="noopener noreferrer"
-                                                                   className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded hover:bg-blue-100">
-                                                                    SINTA
-                                                                </a>
-                                                            )}
-                                                            {dosen.scopus_link && (
-                                                                <a href={dosen.scopus_link} target="_blank" rel="noopener noreferrer"
-                                                                   className="inline-flex items-center gap-1 text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded hover:bg-orange-100">
-                                                                    Scopus
-                                                                </a>
-                                                            )}
-                                                        </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-xs text-gray-500 mb-0.5">Keahlian</p>
+                                                        <p className="text-sm font-semibold text-gray-900 truncate">{dosen.bidang_keahlian}</p>
                                                     </div>
                                                 </div>
                                             )}
                                         </div>
 
                                         {/* Footer */}
-                                        <div className="mt-6 pt-4 border-t border-gray-100">
-                                            <div className="flex items-center justify-between text-sm text-gray-500">
-                                                <span>Dosen Tetap</span>
-                                                <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
-                                                    {dosen.status || 'Aktif'}
-                                                </span>
-                                            </div>
+                                        <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+                                            <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
+                                                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                                {dosen.status || 'Aktif'}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
