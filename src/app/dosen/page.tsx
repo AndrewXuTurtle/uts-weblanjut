@@ -149,21 +149,21 @@ export default function Profil() {
                                     className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-2 cursor-pointer"
                                 >
                                     {/* Header with Photo */}
-                                    <div className="relative bg-gradient-to-br from-blue-600 to-indigo-700 h-40 overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                                        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+                                    <div className="relative bg-gradient-to-br from-blue-600 to-indigo-700 pt-8 pb-16 overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                                        <div className="relative flex justify-center">
                                             <div className="relative">
-                                                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full blur-md opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                                                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition-opacity"></div>
                                                 {dosen.foto_url ? (
                                                     <Image
                                                         src={dosen.foto_url}
                                                         alt={`Foto ${dosen.nama}`}
-                                                        width={96}
-                                                        height={96}
-                                                        className="relative w-24 h-24 rounded-full object-cover border-4 border-white shadow-xl group-hover:scale-110 transition-transform"
+                                                        width={160}
+                                                        height={160}
+                                                        className="relative w-40 h-40 rounded-full object-cover border-4 border-white shadow-2xl group-hover:scale-105 transition-transform"
                                                     />
                                                 ) : (
-                                                    <div className="relative w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-3xl border-4 border-white shadow-xl group-hover:scale-110 transition-transform">
+                                                    <div className="relative w-40 h-40 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-5xl border-4 border-white shadow-2xl group-hover:scale-105 transition-transform">
                                                         {dosen.nama.charAt(0)}
                                                     </div>
                                                 )}
@@ -172,7 +172,7 @@ export default function Profil() {
                                     </div>
 
                                     {/* Content */}
-                                    <div className="p-6 pt-16">
+                                    <div className="p-6">
                                         <div className="text-center mb-6">
                                             <h3 className="text-xl font-bold text-gray-800 mb-1">{dosen.nama}</h3>
                                             <p className="text-blue-600 text-sm font-medium">NIDN: {dosen.nidn}</p>
@@ -210,6 +210,18 @@ export default function Profil() {
                                                     <p className="text-gray-900 font-semibold text-sm break-all">{dosen.email}</p>
                                                 </div>
                                             </div>
+
+                                            {dosen.no_hp && (
+                                                <div className="flex items-start space-x-3 group/item hover:bg-orange-50 p-3 rounded-xl transition-colors">
+                                                    <div className="bg-orange-100 rounded-lg p-2.5 group-hover/item:bg-orange-600 group-hover/item:scale-110 transition-all">
+                                                        <FiPhone className="w-5 h-5 text-orange-600 group-hover/item:text-white transition-colors" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="text-xs font-medium text-gray-500 mb-1">Telepon</p>
+                                                        <p className="text-gray-900 font-semibold text-sm">{dosen.no_hp}</p>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                             {/* Academic Links */}
                                             {(dosen.google_scholar_link || dosen.sinta_link || dosen.scopus_link) && (
